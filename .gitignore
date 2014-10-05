@@ -36,3 +36,6 @@ install_manifest.txt
 
 # compiled files
 bin/*
+
+# vim cache files
+.sw[po]
