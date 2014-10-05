@@ -35,7 +35,7 @@ cmake_install.cmake
 install_manifest.txt
 
 # compiled files
-bin/*
+bin/
 
 # vim cache files
 .sw[po]
