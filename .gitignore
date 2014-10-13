@@ -38,4 +38,8 @@ install_manifest.txt
 bin/
 
 # vim cache files
-.sw[po]
+*.sw[po]
+
+# dot files
+.*
+!.gitignore
