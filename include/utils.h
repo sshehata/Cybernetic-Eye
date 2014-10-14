@@ -23,31 +23,8 @@
 #include <iostream>
 #define CONV_IGNORE_EDGE 0
 
-template <typename T>
-void Conv (const cv::Mat& kernel, const cv::Mat& signal, 
-        const uchar edge_handling, cv::Mat& output) {
-    int i, startj, limiti, limitj;
-    int half_rows = kernel.rows / 2;
-    int half_cols = kernel.cols / 2;
-
-    switch (edge_handling) {
-        case CONV_IGNORE_EDGE:
-            i = half_rows;
-            startj = half_cols;  
-            limiti = half_rows;
-            limitj = half_cols;
-            break;
-    }
-
-    while (i < signal.rows - limiti) {
-        int j = startj;
-        while (j < signal.cols - limitj) {
-            output.at<T>(i, j) = kernel.dot(signal(cv::Rect(j - half_cols, i - half_rows, 
-                            kernel.rows, kernel.cols)));
-            j++;
-        }
-        i++;
-    }
-}
+template<typename T>
+extern void Conv  (const cv::Mat& kernel, const cv::Mat& signal,
+        const uchar edge_handling, cv::Mat& output);
 
 #endif
