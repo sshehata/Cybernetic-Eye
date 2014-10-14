@@ -7,6 +7,8 @@ include_directories	("../include")
 file (MAKE_DIRECTORY ../bin)
 file (GLOB_RECURSE SOURCES "../src/*.cpp")
 
+SET(CMAKE_CXX_FLAGS "-std=c++0x")
+
 add_executable (cybervis ${SOURCES})
 set_target_properties (cybervis PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../bin/)
 target_link_libraries (cybervis ${OpenCV_LIBS})
