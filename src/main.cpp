@@ -10,7 +10,7 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  Samy Shihata (sshihata), 
+ *         Author:  Samy Shihata (sshihata),
  *   Organization:  GUC
  *
  * =====================================================================================
@@ -21,17 +21,20 @@
 #include <iostream>
 #include "utils.h"
 
+using std::cout;
+using std::endl;
+
 int main () {
     cv::Mat signal(5, 5, CV_8UC1);
     cv::randu(signal, cv::Scalar(0), cv::Scalar(255));
-    std::cout << "signal Matrix = \n" << signal << std::endl;
+    cout << "signal Matrix = \n" << signal << endl;
 
     cv::Mat kernel = (cv::Mat_<unsigned char>(3,3) << 1, 2, 1, 2, 4, 2, 1, 2, 1);
-    std::cout << "kernel Matrix = \n" << kernel << std::endl;
+    cout << "kernel Matrix = \n" << kernel << endl;
 
     cv::Mat output(signal.rows, signal.cols, CV_32SC1);
     Conv<int>(kernel, signal, CONV_IGNORE_EDGE, output);
 
-    std::cout << "Conv Matrix: \n" << output << std::endl;
+    cout << "Conv Matrix: \n" << output << endl;
     return 0;
 }
