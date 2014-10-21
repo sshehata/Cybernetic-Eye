@@ -21,7 +21,8 @@
 #include <iostream>
 #include "utils.h"
 
-using namespace std;
+using std::cout;
+using std::endl;
 
 int main () {
     cv::Mat signal(5, 5, CV_8UC1);
