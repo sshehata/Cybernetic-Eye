@@ -10,7 +10,7 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  Samy Shihata (sshihata), 
+ *         Author:  Samy Shihata (sshihata), Mohamed Ashraf (m0hamed)
  *   Organization:  GUC
  *
  * =====================================================================================
@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
 		printf("no image data\n");
 		return -1;
 	}
-	
+
 	namedWindow("Display Image", CV_WINDOW_AUTOSIZE);
 	imshow("Display Image", image);
 
