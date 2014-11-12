@@ -10,7 +10,7 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  Samy Shihata (sshihata),
+ *         Author:  Samy Shihata (sshihata), Mohamed Ashraf (m0hamed)
  *   Organization:  GUC
  *
  * =====================================================================================
@@ -23,18 +23,21 @@
 
 using std::cout;
 using std::endl;
+using cv::Mat;
 
 int main () {
-    cv::Mat signal(5, 5, CV_8UC1);
+    Mat signal(5, 5, CV_8UC1);
     cv::randu(signal, cv::Scalar(0), cv::Scalar(255));
     cout << "signal Matrix = \n" << signal << endl;
 
-    cv::Mat kernel = (cv::Mat_<unsigned char>(3,3) << 1, 2, 1, 2, 4, 2, 1, 2, 1);
+    Mat kernel = (cv::Mat_<unsigned char>(3,3) << 1, 2, 1, 2, 4, 2, 1, 2, 1);
     cout << "kernel Matrix = \n" << kernel << endl;
 
-    cv::Mat output(signal.rows, signal.cols, CV_32SC1);
-    Conv<int>(kernel, signal, CONV_IGNORE_EDGE, output);
+    Mat convolved(signal.rows, signal.cols, CV_32SC1);
+    Conv<int>(kernel, signal, CONV_IGNORE_EDGE, convolved);
+    cout << "Conv Matrix: \n" << convolved << endl;
 
-    cout << "Conv Matrix: \n" << output << endl;
+    Mat smaller = downSample<int>(convolved);
+    cout << "Downsampled  Matrix: \n" << smaller << endl;
     return 0;
 }
