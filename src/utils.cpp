@@ -17,6 +17,12 @@
  */
 
 #include "utils.h"
+#include <cmath>
+
+using cv::Mat;
+using cv::Size;
+using cv::Ptr;
+using std::vector;
 
 template <typename T>
 void Conv(const cv::Mat& kernel, const cv::Mat& signal,
@@ -43,3 +49,26 @@ void Conv(const cv::Mat& kernel, const cv::Mat& signal,
 }
 
 template void Conv<int>(const cv::Mat&, const cv::Mat&, const uchar, cv::Mat&);
+
+template <typename T>
+void buildGaussianPyramid(const Mat& image, vector< vector <Mat> >& pyr,
+    int nOctaves) {
+  int nScales = 5;
+  double sigma = sqrt(2);
+  for(int j=0; j<nOctaves; j++) {
+    for(int i=0; i<nScales; i++) {
+      if(i == 0 && j == 0) {
+        pyr[0][0] = image;
+      } else if (i == 0) {
+        pyr[0][j] = downSample(pyr[1][j-1]);
+      } else {
+        Ptr<cv::FilterEngine> e = cv::createGaussianFilter(image.type(),
+            Size(3, 3), sigma *pow(sqrt(2), i));
+        e->apply(pyr[i-1][j], pyr[i][j]);
+      }
+    }
+  }
+
+}
+
+template void buildGaussianPyramid<int>(const Mat&, vector< vector <Mat> >&, int);
