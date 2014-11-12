@@ -23,8 +23,8 @@ using cv::Mat;
 using cv::Size;
 using cv::Ptr;
 using std::vector;
-
-using cv::Mat;
+using std::cout;
+using std::endl;
 
 template <typename T>
 void Conv(const Mat& kernel, const cv::Mat& signal,
@@ -67,25 +67,27 @@ Mat downSample(const Mat& image) {
 
 template Mat downSample<int>(const cv::Mat&);
 
+// pyr[i][j] is the image at octave i and scale j
 template <typename T>
 void buildGaussianPyramid(const Mat& image, vector< vector <Mat> >& pyr,
     int nOctaves) {
-  int nScales = 5;
+  int nScales = 3;
   double sigma = sqrt(2);
-  for(int j=0; j<nOctaves; j++) {
-    for(int i=0; i<nScales; i++) {
+  for(int i=0; i<nOctaves; i++) {
+    pyr.push_back(vector<Mat>());
+    for(int j=0; j<nScales; j++) {
       if(i == 0 && j == 0) {
-        pyr[0][0] = image;
-      } else if (i == 0) {
-        pyr[0][j] = downSample<T>(pyr[1][j-1]);
+        pyr[0].push_back(image.clone());
+      } else if (j == 0) {
+        pyr[i].push_back(downSample<T>(pyr[i-1][1]));
       } else {
         Ptr<cv::FilterEngine> e = cv::createGaussianFilter(image.type(),
-            Size(3, 3), sigma *pow(sqrt(2), i));
-        e->apply(pyr[i-1][j], pyr[i][j]);
+            Size(3, 3), (sigma * pow(sqrt(2), i)));
+        pyr[i].push_back(pyr[i][j-1].clone()); // to set the correct size and type
+        e->apply(pyr[i][j-1], pyr[i][j]);
       }
     }
   }
-
 }
 
-template void buildGaussianPyramid<int>(const Mat&, vector< vector <Mat> >&, int);
+template void buildGaussianPyramid<uchar>(const Mat&, vector< vector <Mat> >&, int);

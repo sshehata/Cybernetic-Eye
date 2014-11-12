@@ -23,6 +23,7 @@
 
 using std::cout;
 using std::endl;
+using std::vector;
 using cv::Mat;
 
 int main () {
@@ -38,6 +39,18 @@ int main () {
     cout << "Conv Matrix: \n" << convolved << endl;
 
     Mat smaller = downSample<int>(convolved);
-    cout << "Downsampled  Matrix: \n" << smaller << endl;
+    cout << "Downsampled Matrix: \n" << smaller << endl;
+
+    Mat image(16, 16, CV_8UC1);
+    cv::randu(image, cv::Scalar(0), cv::Scalar(255));
+    vector<vector<Mat> > pyramid;
+    buildGaussianPyramid<uchar>(image, pyramid, 3);
+
+    for(int i=0; i<3; i++) {
+      for(int j=0; j<3; j++) {
+        cout << "Pyramid at [" << i << "][" << j << "]:\n " << pyramid[i][j]
+            << endl;
+      }
+    }
     return 0;
 }
