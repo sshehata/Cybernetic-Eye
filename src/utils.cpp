@@ -18,9 +18,11 @@
 
 #include "utils.h"
 
+using cv::Mat;
+
 template <typename T>
-void Conv(const cv::Mat& kernel, const cv::Mat& signal,
-    const uchar edge_handling, cv::Mat& output) {
+void Conv(const Mat& kernel, const cv::Mat& signal,
+    const uchar edge_handling, Mat& output) {
   int i, startj, limiti, limitj;
   int half_rows = kernel.rows / 2;
   int half_cols = kernel.cols / 2;
@@ -43,3 +45,18 @@ void Conv(const cv::Mat& kernel, const cv::Mat& signal,
 }
 
 template void Conv<int>(const cv::Mat&, const cv::Mat&, const uchar, cv::Mat&);
+
+template <typename T>
+Mat downSample(const Mat& image) {
+  int half_rows = image.rows / 2;
+  int half_cols = image.cols / 2;
+  Mat output(half_rows, half_cols, image.type());
+  for (int i=0; i<half_rows; i++) {
+    for(int j=0; j<half_cols; j++) {
+      output.at<T>(i, j) = image.at<T>(i*2, j*2);
+    }
+  }
+  return output;
+}
+
+template Mat downSample<int>(const cv::Mat&);
