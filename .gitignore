@@ -39,3 +39,7 @@ bin/
 
 # vim cache files
 *.sw[po]
+
+# dot files
+.*
+!.gitignore
