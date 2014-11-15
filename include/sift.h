@@ -23,16 +23,12 @@
 #include <opencv2/features2d/features2d.hpp>
 #include <cmath>
 
-using std::vector;
-using cv::Mat;
-using cv::KeyPoint;
-using cv::Rect;
 
 template<typename T>
-extern void getScaleSpaceExtrema(const vector< vector< Mat > >&,
-    vector< KeyPoint>&);
+extern void getScaleSpaceExtrema(const std::vector< std::vector< cv::Mat > >&,
+    std::vector< cv::KeyPoint>&);
 
 template<typename T>
-extern void getExtrema(const vector< Mat >&, const int, vector< KeyPoint >&);
+extern void getExtrema(const std::vector< cv::Mat >&, const int, std::vector< cv::KeyPoint >&);
 
 #endif
