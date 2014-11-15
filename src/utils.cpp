@@ -28,7 +28,7 @@ using std::cout;
 using std::endl;
 
 template <typename T>
-void Conv(const Mat& kernel, const cv::Mat& signal,
+void conv(const Mat& kernel, const cv::Mat& signal,
     const uchar edge_handling, Mat& output) {
   int i, startj, limiti, limitj;
   int half_rows = kernel.rows / 2;
@@ -49,7 +49,7 @@ void Conv(const Mat& kernel, const cv::Mat& signal,
   }
 }
 
-template void Conv<int>(const cv::Mat&, const cv::Mat&, const uchar, cv::Mat&);
+template void conv<int>(const cv::Mat&, const cv::Mat&, const uchar, cv::Mat&);
 
 template <typename T>
 Mat downSample(const Mat& image) {

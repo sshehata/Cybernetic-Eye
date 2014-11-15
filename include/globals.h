@@ -3,15 +3,15 @@
  *
  *       Filename:  globals.h
  *
- *       Description:  A collection of customisation variables
+ *    Description:  A collection of customisation variables
  *
- *       Version:  1.0
- *       Created:  10/13/2014 11:37:05 AM
+ *        Version:  1.0
+ *        Created:  10/13/2014 11:37:05 AM
  *       Revision:  none
  *       Compiler:  gcc
  *
- *       Author:  Samy Shihata (sshihata), Mohamed Ashraf (m0hamed)
- *       Organization:  GUC
+ *         Author:  Samy Shihata (sshihata), Mohamed Ashraf (m0hamed)
+ *   Organization:  GUC
  *
  * =====================================================================================
  */
