@@ -49,13 +49,13 @@ int main (int argc, char**argv) {
     return -1;
   }
 
-  namedWindow( "Cybervis", cv::WINDOW_AUTOSIZE );// Create a window for display.
+  cv::namedWindow( "Cybervis", cv::WINDOW_AUTOSIZE );// Create a window for display.
   imshow( "Cybervis", image );
 
   cv::waitKey(0);
 
   Mat smaller = downSample<uchar>(image);
-  
+
   imshow( "Cybervis", smaller );
 
   cv::waitKey(0);
@@ -70,7 +70,7 @@ int main (int argc, char**argv) {
       imshow( name, pyramid[i][j] );
     }
   }
-      cv::waitKey(0);
+  cv::waitKey(0);
 
   vector< KeyPoint > keypoints;
   getScaleSpaceExtrema<uchar>(pyramid, keypoints);

@@ -19,12 +19,12 @@
 #include "sift.h"
 #include "globals.h"
 #include <iostream>
+using namespace std;
 
 using std::vector;
 using cv::Mat;
 using cv::KeyPoint;
 using cv::Rect;
-using namespace std;
 
 template<typename T>
 void getScaleSpaceExtrema(const vector< vector< Mat > >& pyr, 
@@ -45,6 +45,8 @@ template void getScaleSpaceExtrema<int>(const vector< vector< Mat > >&,
     vector< KeyPoint >&);
 template void getScaleSpaceExtrema<uchar>(const vector< vector< Mat > >&,
     vector< KeyPoint >&);
+template void getScaleSpaceExtrema<double>(const vector< vector< Mat > >&,
+    vector< KeyPoint >&);
 
 template<typename T>
 void getExtrema(const vector< Mat >& sample_scales, const int octave,
@@ -54,21 +56,21 @@ void getExtrema(const vector< Mat >& sample_scales, const int octave,
       T pixel = sample_scales[0].at<T>(i, j);
       Rect r(j-1, i-1, 3, 3);
       bool not_min = false, not_max = false;
-      for (int s = 0; s < (int)sample_scales.size(); s++) {
-        Mat window = sample_scales[s](r);
-        for (int x = 0; x < window.cols; x++) {
-          for (int y = 0; y < window.rows; y++) {
-            T neig = window.at<T>(x, y);
-            not_min = neig < pixel || not_min;
-            not_max = neig > pixel || not_max;
-            if (not_min && not_max)
+      int pi = 0, pj = 0, sample = 0;
+      Mat window = sample_scales[sample](r);
+      while(!(not_min && not_max)) {
+        T neig = window.at<T>(pi, pj++);
+        not_min = neig < pixel || not_min;
+        not_max = neig > pixel || not_max;
+        if (pj == window.cols) {
+          pi++; pj = 0;
+          if (pi == window.rows) {
+            sample++; pi = 0;
+            if (sample == (int)sample_scales.size())
               break;
+            window = sample_scales[sample](r);
           }
-          if (not_min && not_max)
-            break;
         }
-        if (not_min && not_max)
-          break;
       }
       if (!not_min || !not_max){
         keypoints.push_back(KeyPoint(j, i, 0,-1.0f, pixel, octave, -1));
@@ -79,3 +81,4 @@ void getExtrema(const vector< Mat >& sample_scales, const int octave,
 
 template void getExtrema<int>(const vector< Mat >&, const int, vector< KeyPoint >& );
 template void getExtrema<uchar>(const vector< Mat >&, const int, vector< KeyPoint >& );
+template void getExtrema<double>(const vector< Mat >&, const int, vector< KeyPoint >& );

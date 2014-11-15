@@ -65,6 +65,7 @@ Mat downSample(const Mat& image) {
 }
 
 template Mat downSample<int>(const cv::Mat&);
+template Mat downSample<double>(const cv::Mat&);
 
 // pyr[i][j] is the image at octave i and scale j
 template <typename T>
@@ -90,3 +91,4 @@ void buildGaussianPyramid(const Mat& image, vector< vector <Mat> >& pyr,
 }
 
 template void buildGaussianPyramid<uchar>(const Mat&, vector< vector <Mat> >&, int);
+template void buildGaussianPyramid<double>(const Mat&, vector< vector <Mat> >&, int);
