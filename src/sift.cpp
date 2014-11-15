@@ -18,8 +18,6 @@
 
 #include "sift.h"
 #include "globals.h"
-#include <iostream>
-using namespace std;
 
 using std::vector;
 using cv::Mat;
