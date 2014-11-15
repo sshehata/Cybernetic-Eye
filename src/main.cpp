@@ -68,6 +68,7 @@ int main (int argc, char**argv) {
       char name[2];
       std::sprintf(name, "%i", i*3 + 1);
       imshow( name, pyramid[i][j] );
+      cv::waitKey(0);
     }
   }
   cv::waitKey(0);
