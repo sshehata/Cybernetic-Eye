@@ -71,12 +71,12 @@ template Mat downSample<int>(const cv::Mat&);
 // pyr[i][j] is the image at octave i and scale j
 template <typename T>
 void buildGaussianPyramid(const Mat& image, vector< vector <Mat> >& pyr,
-    int nOctaves) {
-  int nScales = SIFT_NUMBER_OF_SCALES;
+    int n_octaves) {
+  int n_scales = SIFT_NUMBER_OF_SCALES;
   double sigma = SIFT_INITIAL_SIGMA;
-  for(int i=0; i<nOctaves; i++) {
+  for(int i=0; i<n_octaves; i++) {
     pyr.push_back(vector<Mat>());
-    for(int j=0; j<nScales; j++) {
+    for(int j=0; j<n_scales; j++) {
       if(i == 0 && j == 0) {
         pyr[0].push_back(image.clone());
       } else if (j == 0) {
