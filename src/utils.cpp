@@ -17,6 +17,7 @@
  */
 
 #include "utils.h"
+#include "globals.h"
 #include <cmath>
 
 using cv::Mat;
@@ -71,8 +72,8 @@ template Mat downSample<int>(const cv::Mat&);
 template <typename T>
 void buildGaussianPyramid(const Mat& image, vector< vector <Mat> >& pyr,
     int nOctaves) {
-  int nScales = 3;
-  double sigma = sqrt(2);
+  int nScales = SIFT_NUMBER_OF_SCALES;
+  double sigma = SIFT_INITIAL_SIGMA;
   for(int i=0; i<nOctaves; i++) {
     pyr.push_back(vector<Mat>());
     for(int j=0; j<nScales; j++) {
@@ -82,7 +83,7 @@ void buildGaussianPyramid(const Mat& image, vector< vector <Mat> >& pyr,
         pyr[i].push_back(downSample<T>(pyr[i-1][1]));
       } else {
         Ptr<cv::FilterEngine> e = cv::createGaussianFilter(image.type(),
-            Size(3, 3), (sigma * pow(sqrt(2), i)));
+            Size(3, 3), (sigma * pow(SIFT_SIGMA_CHANGE, i)));
         pyr[i].push_back(pyr[i][j-1].clone()); // to set the correct size and type
         e->apply(pyr[i][j-1], pyr[i][j]);
       }
