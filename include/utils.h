@@ -20,12 +20,16 @@
 #define UTILS_H
 
 #include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
 #define CONV_IGNORE_EDGE 0
 
 template<typename T>
 extern void Conv  (const cv::Mat& kernel, const cv::Mat& signal,
         const uchar edge_handling, cv::Mat& output);
+
+template<typename T> extern void buildGaussianPyramid(const cv::Mat&,
+    std::vector< std::vector <cv::Mat> >&, int);
 
 template<typename T> extern cv::Mat downSample(const cv::Mat&);
 
