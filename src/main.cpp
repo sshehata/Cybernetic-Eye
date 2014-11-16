@@ -52,5 +52,14 @@ int main () {
             << endl;
       }
     }
+
+    vector<vector<Mat> > dogPyramid = buildDogPyramid<uchar>(pyramid);
+    for(int i=0; i<dogPyramid.size(); i++) {
+	    for(int j=0; j<dogPyramid[0].size(); j++) {
+	      cout << "DOG Pyramid at [" << i << "][" << j << "]:\n " << dogPyramid[i][j]
+            << endl; 
+	    }
+	  }
+
     return 0;
 }
