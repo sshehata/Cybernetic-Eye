@@ -33,7 +33,6 @@ using std::vector;
 using cv::imread;
 
 int main (int argc, char**argv) {
-
   if(argc != 2)
   {
     cout << " Usage: cybervis ImageToLoadAndDisplay" << endl;
@@ -89,6 +88,13 @@ int main (int argc, char**argv) {
 
   vector< KeyPoint > keypoints;
   getScaleSpaceExtrema<double>(dog_pyramid, keypoints);
-  cout << keypoints.size() << endl;
+  cout << "number of key points: " << keypoints.size() << endl;
+
+  vector< double > hist = computeOrientationHist<double>(pyramid[0][0], keypoints[0]);
+  cout << "histogram: " << endl;
+  for (int i = 0; i < hist.size(); i++)
+    cout << hist[i] << " ";
+  
+  
   return 0;
 }

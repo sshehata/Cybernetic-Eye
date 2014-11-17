@@ -10,22 +10,24 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  Samy Shihata (sshihata), 
+ *         Author:  Samy Shihata (sshihata),
  *   Organization:  GUC
  *
  * =====================================================================================
  */
 
 #include "sift.h"
-#include "globals.h"
 
 using std::vector;
 using cv::Mat;
 using cv::KeyPoint;
 using cv::Rect;
+using cv::Point;
+using cv::Sobel;
+using cv::magnitude;
 
 template<typename T>
-void getScaleSpaceExtrema(const vector< vector< Mat > >& pyr, 
+void getScaleSpaceExtrema(const vector< vector< Mat > >& pyr,
     vector< KeyPoint >& keypoints) {
   int octaves = (int) pyr.size();
   int scales = (int) pyr[0].size() - 1;
@@ -63,7 +65,7 @@ inline bool isMinMax(const T pixel, const Rect& rect, const vector< Mat >& sampl
     }
   }
   return true;
-} 
+}
 
 template<typename T>
 void getExtrema(const vector< Mat >& sample_scales, const int octave,
@@ -83,3 +85,36 @@ template void getExtrema<int>(const vector< Mat >&, const int, vector< KeyPoint 
 template void getExtrema<uchar>(const vector< Mat >&, const int, vector< KeyPoint >& );
 template void getExtrema<double>(const vector< Mat >&, const int, vector< KeyPoint >& );
 
+template <typename T>
+vector< double > computeOrientationHist(const Mat& image, const KeyPoint& keypoint) {
+  int x = keypoint.pt.x - SIFT_KEYPOINT_WND_WIDTH - 1;
+  int y = keypoint.pt.y - SIFT_KEYPOINT_WND_HEIGHT - 1;
+  int width = SIFT_KEYPOINT_WND_WIDTH + 2;
+  int height = SIFT_KEYPOINT_WND_HEIGHT + 2;
+  if (x < 0)
+    x = 0;
+  if (y < 0)
+    y = 0;
+  if (x + width > image.cols)
+    width = image.cols - x;
+  if (y + height > image.rows)
+    height = image.rows - y;
+  Rect rect(x, y, width, height);
+  Mat src_wnd = image(rect);
+  Mat dx, dy, mag, angle;
+  Sobel(src_wnd, dx, src_wnd.depth(), 1, 0);
+  Sobel(src_wnd, dy, src_wnd.depth(), 0, 1);
+  magnitude(dx, dy, mag);
+  phase(dx, dy, angle, true);
+  vector<double> bins(128);
+  for (int i = 1; i < src_wnd.rows - 1; i++) {
+    for (int j = 1; j < src_wnd.cols - 1; j++) {
+      int base_bin = ((((i - 1) / 4) * 4) + ((j - 1) / 4)) * 8;
+      int bin = base_bin + (int)(angle.at<T>(i, j) / 45);
+      bins[bin] += mag.at<T>(i, j);
+    }
+  }
+  return bins;
+}
+
+template vector< double > computeOrientationHist<double>(const Mat&, const KeyPoint&);
