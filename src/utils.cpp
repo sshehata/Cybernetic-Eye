@@ -93,7 +93,6 @@ void buildGaussianPyramid(const Mat& image, vector< vector <Mat> >& pyr,
 
 template void buildGaussianPyramid<uchar>(const Mat&, vector< vector <Mat> >&, int);
 
-template<typename T>
 vector<vector<Mat>> buildDogPyramid(vector<vector<Mat>>& gauss_pyr) {
   vector<vector<Mat>> pyramid; 
   int size_vertical = gauss_pyr.size();
@@ -106,5 +105,3 @@ vector<vector<Mat>> buildDogPyramid(vector<vector<Mat>>& gauss_pyr) {
   }
   return pyramid; 
 }
-
-template vector<vector<Mat>> buildDogPyramid<uchar>(vector<vector<Mat>>&);

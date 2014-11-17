@@ -53,13 +53,14 @@ int main () {
       }
     }
 
-    vector<vector<Mat> > dog_pyramid = buildDogPyramid<uchar>(pyramid);
-    for(int i=0; i<dog_pyramid.size(); i++) {
-	    for(int j=0; j<dog_pyramid[0].size(); j++) {
-	      cout << "DOG Pyramid at [" << i << "][" << j << "]:\n " << dog_pyramid[i][j]
+    vector<vector<Mat> > dog_pyramid = buildDogPyramid(pyramid);
+   
+    for(int i=0; i < dog_pyramid.size(); i++) {
+      for(int j=0; j < dog_pyramid[0].size(); j++) {
+        cout << "DOG Pyramid at [" << i << "][" << j << "]:\n " << dog_pyramid[i][j]
             << endl; 
-	    }
-	  }
+      }
+    }
 
     return 0;
 }
