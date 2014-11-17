@@ -10,7 +10,7 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  Mohamed Ashraf (m0hamed)
+ *         Author:  Samy Shihata (sshihata), Mohamed Ashraf (m0hamed)
  *   Organization:  GUC
  *
  * =====================================================================================

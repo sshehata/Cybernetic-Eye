@@ -28,12 +28,11 @@ using std::cout;
 using std::endl;
 
 template <typename T>
-void Conv(const Mat& kernel, const cv::Mat& signal,
+void conv(const Mat& kernel, const cv::Mat& signal,
     const uchar edge_handling, Mat& output) {
   int i, startj, limiti, limitj;
   int half_rows = kernel.rows / 2;
   int half_cols = kernel.cols / 2;
-
   switch (edge_handling) {
     case CONV_IGNORE_EDGE:
       i = half_rows;
@@ -42,7 +41,6 @@ void Conv(const Mat& kernel, const cv::Mat& signal,
       limitj = half_cols;
       break;
   }
-
   for (;i < signal.rows - limiti;i++) {
     for (int j = startj; j < signal.cols - limitj; j++) {
       output.at<T>(i, j) = kernel.dot(signal(cv::Rect(j - half_cols, i - half_rows,
@@ -51,7 +49,7 @@ void Conv(const Mat& kernel, const cv::Mat& signal,
   }
 }
 
-template void Conv<int>(const cv::Mat&, const cv::Mat&, const uchar, cv::Mat&);
+template void conv<int>(const cv::Mat&, const cv::Mat&, const uchar, cv::Mat&);
 
 template <typename T>
 Mat downSample(const Mat& image) {
@@ -67,10 +65,11 @@ Mat downSample(const Mat& image) {
 }
 
 template Mat downSample<int>(const cv::Mat&);
+template Mat downSample<double>(const cv::Mat&);
 
 // pyr[i][j] is the image at octave i and scale j
 template <typename T>
-void buildGaussianPyramid(const Mat& image, vector< vector <Mat> >& pyr,
+void buildGaussianPyramid(const Mat& image, vector< vector <Mat>>& pyr,
     int n_octaves) {
   int n_scales = SIFT_NUMBER_OF_SCALES;
   double sigma = SIFT_INITIAL_SIGMA;
@@ -92,6 +91,7 @@ void buildGaussianPyramid(const Mat& image, vector< vector <Mat> >& pyr,
 }
 
 template void buildGaussianPyramid<uchar>(const Mat&, vector< vector <Mat> >&, int);
+template void buildGaussianPyramid<double>(const Mat&, vector< vector <Mat> >&, int);
 
 vector<vector<Mat>> buildDogPyramid(vector<vector<Mat>>& gauss_pyr) {
   vector<vector<Mat>> pyramid;

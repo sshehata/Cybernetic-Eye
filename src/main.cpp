@@ -18,49 +18,77 @@
 
 #include <opencv2/core/core.hpp>
 #include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/highgui/highgui.hpp>
 #include <iostream>
 #include "utils.h"
+#include "sift.h"
+#include <cmath>
 
 using std::cout;
 using std::endl;
 using std::vector;
 using cv::Mat;
+using cv::KeyPoint;
+using std::vector;
+using cv::imread;
 
-int main () {
-    Mat signal(5, 5, CV_8UC1);
-    cv::randu(signal, cv::Scalar(0), cv::Scalar(255));
-    cout << "signal Matrix = \n" << signal << endl;
+int main (int argc, char**argv) {
 
-    Mat kernel = (cv::Mat_<unsigned char>(3,3) << 1, 2, 1, 2, 4, 2, 1, 2, 1);
-    cout << "kernel Matrix = \n" << kernel << endl;
+  if(argc != 2)
+  {
+    cout << " Usage: cybervis ImageToLoadAndDisplay" << endl;
+    return -1;
+  }
 
-    Mat convolved(signal.rows, signal.cols, CV_32SC1);
-    Conv<int>(kernel, signal, CONV_IGNORE_EDGE, convolved);
-    cout << "Conv Matrix: \n" << convolved << endl;
+  Mat image;
+  image = imread(argv[1], 0);
 
-    Mat smaller = downSample<int>(convolved);
-    cout << "Downsampled Matrix: \n" << smaller << endl;
+  if(!image.data)
+  {
+    cout << "Could not open or find the image" << endl ;
+    return -1;
+  }
 
-    Mat image(16, 16, CV_8UC1);
-    cv::randu(image, cv::Scalar(0), cv::Scalar(255));
-    vector<vector<Mat> > pyramid;
-    buildGaussianPyramid<uchar>(image, pyramid, 3);
+  cv::namedWindow("Cybervis", cv::WINDOW_AUTOSIZE);// Create a window for display.
+  imshow("Cybervis", image);
 
-    for(int i=0; i<3; i++) {
-      for(int j=0; j<3; j++) {
-        cout << "Pyramid at [" << i << "][" << j << "]:\n " << pyramid[i][j]
-            << endl;
-      }
+  Mat image_double(image.rows, image.cols, CV_64FC1);
+  image.convertTo(image_double, image_double.type());
+  cv::normalize(image_double, image_double, 0, 1, cv::NORM_MINMAX);
+
+  cv::waitKey(0);
+
+  Mat smaller = downSample<double>(image_double);
+
+  imshow("Cybervis", smaller);
+
+  cv::waitKey(0);
+
+  vector<vector<Mat>> pyramid;
+  buildGaussianPyramid<double>(image_double, pyramid, 3);
+
+  for(int i=0; i<3; i++) {
+    for(int j=0; j<5; j++) {
+      char name[2];
+      std::sprintf(name, "%i", i*3 + 1);
+      imshow(name, pyramid[i][j]);
+      cv::waitKey(0);
     }
+  }
 
-    vector<vector<Mat> > dog_pyramid = buildDogPyramid(pyramid);
-   
-    for(int i=0; i < dog_pyramid.size(); i++) {
-      for(int j=0; j < dog_pyramid[0].size(); j++) {
-        cout << "DOG Pyramid at [" << i << "][" << j << "]:\n " << dog_pyramid[i][j]
-            << endl; 
-      }
+  vector<vector<Mat>> dog_pyramid = buildDogPyramid(pyramid);
+
+  for(int i=0; i < dog_pyramid.size(); i++) {
+    for(int j=0; j < dog_pyramid[0].size(); j++) {
+      char name[2];
+      std::sprintf(name, "%i", i*3 + 1);
+      imshow(name, dog_pyramid[i][j]);
+      cv::waitKey(0);
     }
+  }
 
-    return 0;
+  vector< KeyPoint > keypoints;
+  getScaleSpaceExtrema<double>(dog_pyramid, keypoints);
+  cout << keypoints.size() << endl;
+  return 0;
 }

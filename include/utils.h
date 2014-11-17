@@ -25,7 +25,7 @@
 #define CONV_IGNORE_EDGE 0
 
 template<typename T>
-extern void Conv  (const cv::Mat& kernel, const cv::Mat& signal,
+extern void conv  (const cv::Mat& kernel, const cv::Mat& signal,
         const uchar edge_handling, cv::Mat& output);
 
 template<typename T> extern void buildGaussianPyramid(const cv::Mat&,
