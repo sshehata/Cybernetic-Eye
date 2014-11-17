@@ -10,7 +10,7 @@
  *       Revision:  none
  *       Compiler:  g++
  *
- *         Author:  Samy Shihata (sshihata), Mohamed Ashraf (m0hamed)
+ *         Author:  Samy Shihata (sshihata), Mohamed Ashraf (m0hamed), Hossam Ahmed (hoss93)
  *   Organization:  GUC
  *
  * =====================================================================================
@@ -92,3 +92,16 @@ void buildGaussianPyramid(const Mat& image, vector< vector <Mat> >& pyr,
 
 template void buildGaussianPyramid<uchar>(const Mat&, vector< vector <Mat> >&, int);
 template void buildGaussianPyramid<double>(const Mat&, vector< vector <Mat> >&, int);
+
+vector<vector<Mat>> buildDogPyramid(vector<vector<Mat>>& gauss_pyr) {
+  vector<vector<Mat> > pyramid;
+  int octaves = gauss_pyr.size();
+  int scales = gauss_pyr[0].size();
+  for(int i=0; i < octaves; i++) {
+    pyramid.push_back(vector<Mat>());
+    for(int j=0; j < scales - 1; j++) {
+      pyramid[i].push_back(gauss_pyr[i][j] - gauss_pyr[i][j+1]);
+    }
+  }
+  return pyramid;
+}

@@ -10,7 +10,7 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  Samy Shihata (sshihata), Mohamed Ashraf (m0hamed)
+ *         Author:  Samy Shihata (sshihata), Mohamed Ashraf (m0hamed), Hossam Ahmed (hoss93)
  *   Organization:  GUC
  *
  * =====================================================================================
@@ -60,21 +60,32 @@ int main (int argc, char**argv) {
 
   cv::waitKey(0);
 
-  vector<vector<Mat> > pyramid;
+  vector<vector<Mat>> pyramid;
   buildGaussianPyramid<uchar>(image, pyramid, 3);
 
   for(int i=0; i<3; i++) {
     for(int j=0; j<5; j++) {
       char name[2];
       std::sprintf(name, "%i", i*3 + 1);
-      imshow( name, pyramid[i][j] );
+      imshow(name, pyramid[i][j] );
       cv::waitKey(0);
     }
   }
-  cv::waitKey(0);
+
+
+  vector<vector<Mat> > dog_pyramid = buildDogPyramid(pyramid);
+
+  for(int i=0; i < dog_pyramid.size(); i++) {
+    for(int j=0; j < dog_pyramid[0].size(); j++) {
+      char name[2];
+      std::sprintf(name, "%i", i*3 + 1);
+      imshow(name, dog_pyramid[i][j] );
+      cv::waitKey(0);
+    }
+  }
 
   vector< KeyPoint > keypoints;
-  getScaleSpaceExtrema<uchar>(pyramid, keypoints);
+  getScaleSpaceExtrema<uchar>(dog_pyramid, keypoints);
   cout << keypoints.size() << endl;
   return 0;
 }
