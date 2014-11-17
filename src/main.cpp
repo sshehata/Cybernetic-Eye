@@ -10,7 +10,7 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  Samy Shihata (sshihata), Mohamed Ashraf (m0hamed)
+ *         Author:  Samy Shihata (sshihata), Mohamed Ashraf (m0hamed), Hossam Ahmed (hoss93)
  *   Organization:  GUC
  *
  * =====================================================================================
@@ -52,5 +52,15 @@ int main () {
             << endl;
       }
     }
+
+    vector<vector<Mat> > dog_pyramid = buildDogPyramid(pyramid);
+   
+    for(int i=0; i < dog_pyramid.size(); i++) {
+      for(int j=0; j < dog_pyramid[0].size(); j++) {
+        cout << "DOG Pyramid at [" << i << "][" << j << "]:\n " << dog_pyramid[i][j]
+            << endl; 
+      }
+    }
+
     return 0;
 }

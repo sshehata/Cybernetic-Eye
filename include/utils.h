@@ -10,7 +10,7 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  Samy Shihata (sshihata), Mohamed Ashraf (m0hamed)
+ *         Author:  Samy Shihata (sshihata), Mohamed Ashraf (m0hamed), Hossam Ahmed (hoss93)
  *   Organization:  GUC
  *
  * =====================================================================================
@@ -32,5 +32,8 @@ template<typename T> extern void buildGaussianPyramid(const cv::Mat&,
     std::vector< std::vector <cv::Mat> >&, int);
 
 template<typename T> extern cv::Mat downSample(const cv::Mat&);
+
+std::vector <std::vector <cv::Mat>> buildDogPyramid(
+    std::vector <std::vector <cv::Mat>>&);
 
 #endif
