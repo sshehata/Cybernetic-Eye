@@ -45,7 +45,7 @@ int main (int argc, char**argv) {
 
   if(! image.data )
   {
-    cout <<  "Could not open or find the image" << std::endl ;
+    cout <<  "Could not open or find the image" << endl ;
     return -1;
   }
 
