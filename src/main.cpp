@@ -88,7 +88,7 @@ int main (int argc, char**argv) {
   }
 
   vector< KeyPoint > keypoints;
-  getScaleSpaceExtrema<uchar>(dog_pyramid, keypoints);
+  getScaleSpaceExtrema<double>(dog_pyramid, keypoints);
   cout << keypoints.size() << endl;
   return 0;
 }
