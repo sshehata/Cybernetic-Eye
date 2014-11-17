@@ -95,11 +95,11 @@ template void buildGaussianPyramid<uchar>(const Mat&, vector< vector <Mat> >&, i
 
 vector<vector<Mat>> buildDogPyramid(vector<vector<Mat>>& gauss_pyr) {
   vector<vector<Mat>> pyramid; 
-  int size_vertical = gauss_pyr.size();
-  int size_horizontal = gauss_pyr[0].size();
-  for(int i=0; i<size_vertical; i++) {
+  int octaves = gauss_pyr.size();
+  int scales = gauss_pyr[0].size();
+  for(int i=0; i < octaves; i++) {
     pyramid.push_back(vector<Mat>());
-    for(int j=0; j<size_horizontal - 1; j++) {
+    for(int j=0; j < scales - 1; j++) {
       pyramid[i].push_back(gauss_pyr[i][j] - gauss_pyr[i][j+1]);
     }
   }
