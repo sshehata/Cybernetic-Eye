@@ -46,6 +46,25 @@ template void getScaleSpaceExtrema<uchar>(const vector< vector< Mat > >&,
 template void getScaleSpaceExtrema<double>(const vector< vector< Mat > >&,
     vector< KeyPoint >&);
 
+
+template <typename T>
+inline bool isMinMax(const T pixel, const Rect& r, const vector< Mat >& sample_scales) {
+  bool not_min = false, not_max = false;
+  for (int samples = 0; samples < (int)sample_scales.size(); samples++) {
+    Mat window = sample_scales[samples](r);
+    for (int pi = 0; pi < window.rows; pi++) {
+      for (int pj = 0; pj < window.cols; pj++) {
+        T neig = window.at<T>(pi, pj);
+        not_min = neig < pixel || not_min;
+        not_max = neig > pixel || not_max;
+        if (not_min && not_max)
+          return false;
+      }
+    }
+  }
+  return true;
+} 
+
 template<typename T>
 void getExtrema(const vector< Mat >& sample_scales, const int octave,
     vector< KeyPoint >& keypoints) {
@@ -53,24 +72,7 @@ void getExtrema(const vector< Mat >& sample_scales, const int octave,
     for (int j = 1; j < sample_scales[0].cols-1; j++) {
       T pixel = sample_scales[0].at<T>(i, j);
       Rect r(j-1, i-1, 3, 3);
-      bool not_min = false, not_max = false;
-      int pi = 0, pj = 0, sample = 0;
-      Mat window = sample_scales[sample](r);
-      while(!(not_min && not_max)) {
-        T neig = window.at<T>(pi, pj++);
-        not_min = neig < pixel || not_min;
-        not_max = neig > pixel || not_max;
-        if (pj == window.cols) {
-          pi++; pj = 0;
-          if (pi == window.rows) {
-            sample++; pi = 0;
-            if (sample == (int)sample_scales.size())
-              break;
-            window = sample_scales[sample](r);
-          }
-        }
-      }
-      if (!not_min || !not_max){
+      if (isMinMax(pixel, r, sample_scales)){
         keypoints.push_back(KeyPoint(j, i, 0,-1.0f, pixel, octave, -1));
       }
     }
@@ -80,3 +82,4 @@ void getExtrema(const vector< Mat >& sample_scales, const int octave,
 template void getExtrema<int>(const vector< Mat >&, const int, vector< KeyPoint >& );
 template void getExtrema<uchar>(const vector< Mat >&, const int, vector< KeyPoint >& );
 template void getExtrema<double>(const vector< Mat >&, const int, vector< KeyPoint >& );
+
