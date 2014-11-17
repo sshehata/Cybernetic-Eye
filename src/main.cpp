@@ -36,7 +36,7 @@ int main (int argc, char**argv) {
 
   if( argc != 2)
   {
-    cout <<" Usage: cybervis ImageToLoadAndDisplay" << endl;
+    cout << " Usage: cybervis ImageToLoadAndDisplay" << endl;
     return -1;
   }
 
@@ -45,18 +45,18 @@ int main (int argc, char**argv) {
 
   if(! image.data )
   {
-    cout <<  "Could not open or find the image" << endl ;
+    cout << "Could not open or find the image" << endl ;
     return -1;
   }
 
-  cv::namedWindow( "Cybervis", cv::WINDOW_AUTOSIZE );// Create a window for display.
-  imshow( "Cybervis", image );
+  cv::namedWindow("Cybervis", cv::WINDOW_AUTOSIZE);// Create a window for display.
+  imshow("Cybervis", image);
 
   cv::waitKey(0);
 
   Mat smaller = downSample<uchar>(image);
 
-  imshow( "Cybervis", smaller );
+  imshow("Cybervis", smaller);
 
   cv::waitKey(0);
 
@@ -72,14 +72,13 @@ int main (int argc, char**argv) {
     }
   }
 
-
   vector<vector<Mat> > dog_pyramid = buildDogPyramid(pyramid);
 
   for(int i=0; i < dog_pyramid.size(); i++) {
     for(int j=0; j < dog_pyramid[0].size(); j++) {
       char name[2];
       std::sprintf(name, "%i", i*3 + 1);
-      imshow(name, dog_pyramid[i][j] );
+      imshow(name, dog_pyramid[i][j]);
       cv::waitKey(0);
     }
   }
