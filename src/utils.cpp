@@ -103,5 +103,5 @@ vector<vector<Mat>> buildDogPyramid(vector<vector<Mat>>& gauss_pyr) {
       pyramid[i].push_back(gauss_pyr[i][j] - gauss_pyr[i][j+1]);
     }
   }
-  return pyramid; 
+  return pyramid;
 }
