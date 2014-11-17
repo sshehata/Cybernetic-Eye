@@ -48,10 +48,10 @@ template void getScaleSpaceExtrema<double>(const vector< vector< Mat > >&,
 
 
 template <typename T>
-inline bool isMinMax(const T pixel, const Rect& r, const vector< Mat >& sample_scales) {
+inline bool isMinMax(const T pixel, const Rect& rect, const vector< Mat >& sample_scales) {
   bool not_min = false, not_max = false;
   for (int samples = 0; samples < (int)sample_scales.size(); samples++) {
-    Mat window = sample_scales[samples](r);
+    Mat window = sample_scales[samples](rect);
     for (int pi = 0; pi < window.rows; pi++) {
       for (int pj = 0; pj < window.cols; pj++) {
         T neig = window.at<T>(pi, pj);
@@ -71,8 +71,8 @@ void getExtrema(const vector< Mat >& sample_scales, const int octave,
   for (int i = 1; i < sample_scales[0].rows-1; i++) {
     for (int j = 1; j < sample_scales[0].cols-1; j++) {
       T pixel = sample_scales[0].at<T>(i, j);
-      Rect r(j-1, i-1, 3, 3);
-      if (isMinMax(pixel, r, sample_scales)){
+      Rect rect(j-1, i-1, 3, 3);
+      if (isMinMax(pixel, rect, sample_scales)){
         keypoints.push_back(KeyPoint(j, i, 0,-1.0f, pixel, octave, -1));
       }
     }

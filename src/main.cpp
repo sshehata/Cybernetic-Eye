@@ -34,7 +34,7 @@ using cv::imread;
 
 int main (int argc, char**argv) {
 
-  if( argc != 2)
+  if(argc != 2)
   {
     cout << " Usage: cybervis ImageToLoadAndDisplay" << endl;
     return -1;
@@ -43,7 +43,7 @@ int main (int argc, char**argv) {
   Mat image;
   image = imread(argv[1], 0);
 
-  if(! image.data )
+  if(!image.data)
   {
     cout << "Could not open or find the image" << endl ;
     return -1;
@@ -52,22 +52,26 @@ int main (int argc, char**argv) {
   cv::namedWindow("Cybervis", cv::WINDOW_AUTOSIZE);// Create a window for display.
   imshow("Cybervis", image);
 
+  Mat image_double(image.rows, image.cols, CV_64FC1);
+  image.convertTo(image_double, image_double.type());
+  cv::normalize(image_double, image_double, 0, 1, cv::NORM_MINMAX);
+
   cv::waitKey(0);
 
-  Mat smaller = downSample<uchar>(image);
+  Mat smaller = downSample<double>(image_double);
 
   imshow("Cybervis", smaller);
 
   cv::waitKey(0);
 
   vector<vector<Mat>> pyramid;
-  buildGaussianPyramid<uchar>(image, pyramid, 3);
+  buildGaussianPyramid<double>(image_double, pyramid, 3);
 
   for(int i=0; i<3; i++) {
     for(int j=0; j<5; j++) {
       char name[2];
       std::sprintf(name, "%i", i*3 + 1);
-      imshow(name, pyramid[i][j] );
+      imshow(name, pyramid[i][j]);
       cv::waitKey(0);
     }
   }
