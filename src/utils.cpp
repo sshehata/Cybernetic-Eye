@@ -69,7 +69,7 @@ template Mat downSample<double>(const cv::Mat&);
 
 // pyr[i][j] is the image at octave i and scale j
 template <typename T>
-void buildGaussianPyramid(const Mat& image, vector< vector <Mat> >& pyr,
+void buildGaussianPyramid(const Mat& image, vector< vector <Mat>>& pyr,
     int n_octaves) {
   int n_scales = SIFT_NUMBER_OF_SCALES;
   double sigma = SIFT_INITIAL_SIGMA;

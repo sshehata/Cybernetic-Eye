@@ -76,7 +76,7 @@ int main (int argc, char**argv) {
     }
   }
 
-  vector<vector<Mat> > dog_pyramid = buildDogPyramid(pyramid);
+  vector<vector<Mat>> dog_pyramid = buildDogPyramid(pyramid);
 
   for(int i=0; i < dog_pyramid.size(); i++) {
     for(int j=0; j < dog_pyramid[0].size(); j++) {
