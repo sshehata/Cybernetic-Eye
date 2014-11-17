@@ -95,6 +95,5 @@ int main (int argc, char**argv) {
   for (int i = 0; i < hist.size(); i++)
     cout << hist[i] << " ";
   
-  
   return 0;
 }
