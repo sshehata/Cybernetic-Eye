@@ -25,6 +25,7 @@ using cv::Rect;
 using cv::Point;
 using cv::Sobel;
 using cv::magnitude;
+using cv::normalize;
 
 template<typename T>
 void getScaleSpaceExtrema(const vector< vector< Mat > >& pyr,
@@ -109,12 +110,15 @@ vector< double > computeOrientationHist(const Mat& image, const KeyPoint& keypoi
   vector<double> bins(128);
   for (int i = 1; i < src_wnd.rows - 1; i++) {
     for (int j = 1; j < src_wnd.cols - 1; j++) {
+      //calculate the start of bin range for the current 4x4 quad;
       int base_bin = ((((i - 1) / 4) * 4) + ((j - 1) / 4)) * 8;
       int bin = base_bin + (int)(angle.at<T>(i, j) / 45);
       bins[bin] += mag.at<T>(i, j);
     }
   }
-  return bins;
+  vector<double> bins_norm;
+  normalize(bins, bins_norm, 0, 1, cv::NORM_MINMAX);
+  return bins_norm;
 }
 
 template vector< double > computeOrientationHist<double>(const Mat&, const KeyPoint&);
