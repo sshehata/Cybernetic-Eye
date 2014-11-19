@@ -110,9 +110,9 @@ void cleanPoints(Mat& image, vector< KeyPoint >& keypoints, int curv_thr) {
   Mat trace_squared = trace ^ 2;
   Mat Det = Dxx * Dyy - (Dxy) ^ 2;
   // trr is the trace squared * r
-  Mat trr = trace_squared * PRINCIPAL_CURVATURE_THRESHOLD;
+  Mat trr = trace_squared * curv_thr;
   // detr is the det 8 (r + 1) ^ 2
-  Mat detr =  Det * (PRINCIPAL_CURVATURE_THRESHOLD + 1) ^ 2;
+  Mat detr =  Det * (curv_thr + 1) ^ 2;
 
   // Loop responsible for removing points with low
   for (int i = 0; i < keypoints.size(); ++i) {

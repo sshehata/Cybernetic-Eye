@@ -22,6 +22,7 @@
 #include <iostream>
 #include "utils.h"
 #include "sift.h"
+#include "globals.h"
 #include <cmath>
 
 using std::cout;
@@ -90,5 +91,9 @@ int main (int argc, char**argv) {
   vector< KeyPoint > keypoints;
   getScaleSpaceExtrema<double>(dog_pyramid, keypoints);
   cout << keypoints.size() << endl;
+
+  cleanPoints(image, keypoints, PRINCIPAL_CURVATURE_THRESHOLD);
+  cout << keypoints.size() << endl;
+
   return 0;
 }
