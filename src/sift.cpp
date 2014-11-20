@@ -18,6 +18,7 @@
 
 #include "sift.h"
 #include "globals.h"
+using namespace cv;
 using std::vector;
 using cv::Mat;
 using cv::KeyPoint;
@@ -82,7 +83,7 @@ template void getExtrema<int>(const vector< Mat >&, const int, vector< KeyPoint 
 template void getExtrema<uchar>(const vector< Mat >&, const int, vector< KeyPoint >& );
 template void getExtrema<double>(const vector< Mat >&, const int, vector< KeyPoint >& );
 
-vector< KeyPoint >& cleanPoints(Mat& image, vector< KeyPoint >& keypoints) {
+vector< KeyPoint > cleanPoints(Mat& image, vector< KeyPoint >& keypoints) {
   vector<KeyPoint> valid_keypoints;
   // Second derivative kernels
   Mat xx = (Mat_<double>(1,3) << 1, -2, 1);
@@ -108,11 +109,12 @@ vector< KeyPoint >& cleanPoints(Mat& image, vector< KeyPoint >& keypoints) {
     int factor = pow(2,octave);
     int row_index = (int)point.pt.y * factor;
     int col_index = (int)point.pt.x * factor;
-    double principal_curvature = det.at<double>(row_index, col_index) - ALPHA * pow(trace.at<double>(row_index, col_index),2);
+    double principal_curvature = det.at<double>(row_index, col_index) -
+          ALPHA * pow(trace.at<double>(row_index, col_index),2);
     double pixel_value = image.at<double>(row_index, col_index);
     if(principal_curvature < PRINCIPAL_CURVATURE_THRESHOLD && pixel_value > RESPONSE_THRESHOLD) {
       valid_keypoints.push_back(keypoints.at(i));
     }
   }
   return valid_keypoints;
- }
+}
