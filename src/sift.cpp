@@ -18,11 +18,15 @@
 
 #include "sift.h"
 #include "globals.h"
-using namespace cv;
 using std::vector;
 using cv::Mat;
 using cv::KeyPoint;
 using cv::Rect;
+using cv::filter2D;
+using cv::KeyPoint;
+using cv::Point;
+using cv::BORDER_DEFAULT;
+using cv::Mat_;
 
 template<typename T>
 void getScaleSpaceExtrema(const vector< vector< Mat > >& pyr,
