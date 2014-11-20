@@ -31,6 +31,6 @@ extern void getScaleSpaceExtrema(const std::vector< std::vector< cv::Mat > >&,
 template<typename T>
 extern void getExtrema(const std::vector< cv::Mat >&, const int, std::vector< cv::KeyPoint >&);
 
-void cleanPoints(cv::Mat&, std::vector< cv::KeyPoint>&, int curv_thr);
+std::vector< cv::KeyPoint>& cleanPoints(cv::Mat&, std::vector< cv::KeyPoint>&);
 
 #endif

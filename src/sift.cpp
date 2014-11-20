@@ -18,7 +18,6 @@
 
 #include "sift.h"
 #include "globals.h"
-
 using std::vector;
 using cv::Mat;
 using cv::KeyPoint;
@@ -83,52 +82,37 @@ template void getExtrema<int>(const vector< Mat >&, const int, vector< KeyPoint 
 template void getExtrema<uchar>(const vector< Mat >&, const int, vector< KeyPoint >& );
 template void getExtrema<double>(const vector< Mat >&, const int, vector< KeyPoint >& );
 
-void cleanPoints(Mat& image, vector< KeyPoint >& keypoints, int curv_thr) {
-  for (int i = 0; i < keypoints.size(); ++i) {
-    if(keypoints.at(i).response < RESPONSE_THRESHOLD) {
-      keypoints.erase (keypoints.begin()+i);
-      i--;
-    }
-  }
-
+vector< KeyPoint >& cleanPoints(Mat& image, vector< KeyPoint >& keypoints) {
+  vector<KeyPoint> valid_keypoints;
   // Second derivative kernels
-  Mat xx = (cv::Mat_<unsigned char>(1,3) << 1, -2, 1);
-  Mat yy = (cv::Mat_<unsigned char>(3,1) << 1, -2, 1);
-  Mat xy = (cv::Mat_<unsigned char>(3,3) << 1, 0, -1, 0, 0, 0, -1, 0, 1);
+  Mat xx = (Mat_<double>(1,3) << 1, -2, 1);
+  Mat yy = (Mat_<double>(3,1) << 1, -2, 1);
+  Mat xy = (Mat_<double>(3,3) << 1, 0, -1, 0, 0, 0, -1, 0, 1);
   xy /= 4;
 
   // The matrices to contain the second derivatives
   Mat Dxx;
   Mat Dyy;
   Mat Dxy;
-  conv<int>(xx, image, CONV_IGNORE_EDGE, Dxx);
-  conv<int>(xy, image, CONV_IGNORE_EDGE, Dxy);
-  conv<int>(yy, image, CONV_IGNORE_EDGE, Dyy);
+  filter2D( image, Dxx, -1 , xx, Point( -1, -1 ), 0, BORDER_DEFAULT );
+  filter2D( image, Dxy, -1 , xy, Point( -1, -1 ), 0, BORDER_DEFAULT );
+  filter2D( image, Dyy, -1 , yy, Point( -1, -1 ), 0, BORDER_DEFAULT );
 
   //  The matrices used for operations to check whether a point is clean or not
   Mat trace = Dxx + Dyy;
-  Mat trace_squared = trace ^ 2;
-  Mat Det = Dxx * Dyy - (Dxy) ^ 2;
-  // trr is the trace squared * r
-  Mat trr = trace_squared * curv_thr;
-  // detr is the det 8 (r + 1) ^ 2
-  Mat detr =  Det * (curv_thr + 1) ^ 2;
-
-  // Loop responsible for removing points with low
+  // This has to be element wise because it would have been Dxx * Dyy'
+  Mat det = Dxx.mul(Dyy) - Dxy.mul(Dxy);
   for (int i = 0; i < keypoints.size(); ++i) {
     KeyPoint point = keypoints.at(i);
     int octave = point.octave;
-    int factor = 2 * octave;
-    int row_index = (int)point.pt.x * factor;
-    int col_index = (int)point.pt.y * factor;
-
-    // the first condition checks for negative determinant which is rejected
-    // and the second condition checks the ratio found in the paper
-    if(Det.at<double>(row_index, col_index) < 0 ||
-      trr.at<double>(row_index, col_index) > detr.at<double>(row_index, col_index)) {
-      keypoints.erase (keypoints.begin()+i);
-      i--;
-      continue;
+    int factor = pow(2,octave);
+    int row_index = (int)point.pt.y * factor;
+    int col_index = (int)point.pt.x * factor;
+    double principal_curvature = det.at<double>(row_index, col_index) - ALPHA * pow(trace.at<double>(row_index, col_index),2);
+    double pixel_value = image.at<double>(row_index, col_index);
+    if(principal_curvature < PRINCIPAL_CURVATURE_THRESHOLD && pixel_value > RESPONSE_THRESHOLD) {
+      valid_keypoints.push_back(keypoints.at(i));
     }
   }
-}
+  return valid_keypoints;
+ }
