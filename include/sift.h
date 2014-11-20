@@ -10,7 +10,7 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  Samy Shihata (sshihata), 
+ *         Author:  Samy Shihata (sshihata),
  *   Organization:  GUC
  *
  * =====================================================================================
@@ -30,5 +30,8 @@ extern void getScaleSpaceExtrema(const std::vector< std::vector< cv::Mat > >&,
 
 template<typename T>
 extern void getExtrema(const std::vector< cv::Mat >&, const int, std::vector< cv::KeyPoint >&);
+
+template<typename T> extern void findSiftInterestPoint(cv::Mat&,
+    std::vector<cv::KeyPoint>&);
 
 #endif

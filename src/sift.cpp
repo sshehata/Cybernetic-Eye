@@ -10,7 +10,7 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  Samy Shihata (sshihata), 
+ *         Author:  Samy Shihata (sshihata),
  *   Organization:  GUC
  *
  * =====================================================================================
@@ -25,7 +25,7 @@ using cv::KeyPoint;
 using cv::Rect;
 
 template<typename T>
-void getScaleSpaceExtrema(const vector< vector< Mat > >& pyr, 
+void getScaleSpaceExtrema(const vector< vector< Mat > >& pyr,
     vector< KeyPoint >& keypoints) {
   int octaves = (int) pyr.size();
   int scales = (int) pyr[0].size() - 1;
@@ -63,7 +63,7 @@ inline bool isMinMax(const T pixel, const Rect& rect, const vector< Mat >& sampl
     }
   }
   return true;
-} 
+}
 
 template<typename T>
 void getExtrema(const vector< Mat >& sample_scales, const int octave,
@@ -83,3 +83,15 @@ template void getExtrema<int>(const vector< Mat >&, const int, vector< KeyPoint 
 template void getExtrema<uchar>(const vector< Mat >&, const int, vector< KeyPoint >& );
 template void getExtrema<double>(const vector< Mat >&, const int, vector< KeyPoint >& );
 
+
+template<typename T>
+void findSiftInterestPoint(Mat& image, vector<KeyPoint>& keypoints) {
+  vector<vector<Mat>> pyramid;
+  buildGaussianPyramid<T>(image, pyramid, SIFT_NUMBER_OF_OCTAVES);
+  vector<vector<Mat>> dog_pyramid = buildDogPyramid(pyramid);
+  getScaleSpaceExtrema<T>(dog_pyramid, keypoints);
+}
+
+template void findSiftInterestPoint<int>(Mat&, vector<KeyPoint>&);
+template void findSiftInterestPoint<uchar>(Mat&, vector<KeyPoint>&);
+template void findSiftInterestPoint<double>(Mat&, vector<KeyPoint>&);
