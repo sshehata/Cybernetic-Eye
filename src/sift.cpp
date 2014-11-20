@@ -83,7 +83,7 @@ template void getExtrema<int>(const vector< Mat >&, const int, vector< KeyPoint 
 template void getExtrema<uchar>(const vector< Mat >&, const int, vector< KeyPoint >& );
 template void getExtrema<double>(const vector< Mat >&, const int, vector< KeyPoint >& );
 
-vector< KeyPoint > cleanPoints(Mat& image, vector< KeyPoint >& keypoints) {
+vector< KeyPoint > cleanPoints(const Mat& image,const vector< KeyPoint >& keypoints) {
   vector<KeyPoint> valid_keypoints;
   // Second derivative kernels
   Mat xx = (Mat_<double>(1,3) << 1, -2, 1);
