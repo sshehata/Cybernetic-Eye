@@ -10,7 +10,7 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  Samy Shihata (sshihata), 
+ *         Author:  Samy Shihata (sshihata), Hossam Ahmed (hoss93)
  *   Organization:  GUC
  *
  * =====================================================================================
@@ -22,7 +22,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/features2d/features2d.hpp>
 #include <cmath>
-
+#include "utils.h"
 
 template<typename T>
 extern void getScaleSpaceExtrema(const std::vector< std::vector< cv::Mat > >&,
@@ -30,5 +30,7 @@ extern void getScaleSpaceExtrema(const std::vector< std::vector< cv::Mat > >&,
 
 template<typename T>
 extern void getExtrema(const std::vector< cv::Mat >&, const int, std::vector< cv::KeyPoint >&);
+
+std::vector< cv::KeyPoint> cleanPoints(const cv::Mat&, const std::vector< cv::KeyPoint>&);
 
 #endif
