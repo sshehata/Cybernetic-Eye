@@ -103,16 +103,19 @@ int main (int argc, char**argv) {
 
   vector< KeyPoint > valid_keypoints = cleanPoints(image_double, keypoints);
 
+  Mat color_image;
+  cvtColor(image, color_image, CV_GRAY2RGB);
   for (int i = 0; i < valid_keypoints.size(); ++i) {
     KeyPoint point = valid_keypoints.at(i);
     int octave = point.octave;
     int factor = pow(2,octave);
     int row_index = (int)point.pt.y * factor;
     int col_index = (int)point.pt.x * factor;
-    image.at<uchar>(row_index,col_index) = 0;
+    //image.at<uchar>(row_index,col_index) = 1;
+    color_image.at<cv::Vec3b>(row_index,col_index) = {0, 0, 255};
   }
   cv::namedWindow("keypoints", cv::WINDOW_AUTOSIZE);// Create a window for display.
-  imshow("keypoints", image.clone());
+  imshow("keypoints", color_image.clone());
   cv::waitKey(0);
   return 0;
 }

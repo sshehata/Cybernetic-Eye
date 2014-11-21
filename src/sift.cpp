@@ -27,6 +27,8 @@ using cv::KeyPoint;
 using cv::Point;
 using cv::BORDER_DEFAULT;
 using cv::Mat_;
+using std::cout;
+using std::endl;
 
 template<typename T>
 void getScaleSpaceExtrema(const vector< vector< Mat > >& pyr,
@@ -68,6 +70,27 @@ inline bool isMinMax(const T pixel, const Rect& rect, const vector< Mat >& sampl
   }
   return true;
 }
+
+template<typename T>
+T getMax(const Mat image) {
+  T max = -1;
+  int maxi = 0;
+  int maxj = 0;
+  for (int i = 1; i < image.rows; i++) {
+    for (int j = 1; j < image.cols; j++) {
+      T pixel = image.at<T>(i, j);
+      if(pixel > max) {
+        max = pixel;
+        maxi = i;
+        maxj = j;
+      }
+    }
+  }
+  cout << maxi << " " << maxj << endl;
+  return max;
+}
+template double getMax<double>(const Mat image);
+template int getMax<int>(const Mat image);
 
 template<typename T>
 void getExtrema(const vector< Mat >& sample_scales, const int octave,
