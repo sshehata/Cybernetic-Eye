@@ -107,3 +107,24 @@ vector<vector<Mat>> buildDogPyramid(vector<vector<Mat>>& gauss_pyr) {
   }
   return pyramid;
 }
+
+template<typename T>
+T getMax(const Mat image) {
+  T max = -1;
+  int maxi = 0;
+  int maxj = 0;
+  for (int i = 1; i < image.rows; i++) {
+    for (int j = 1; j < image.cols; j++) {
+      T pixel = image.at<T>(i, j);
+      if(pixel > max) {
+        max = pixel;
+        maxi = i;
+        maxj = j;
+      }
+    }
+  }
+  cout << maxi << " " << maxj << endl;
+  return max;
+}
+template double getMax<double>(const Mat image);
+template int getMax<int>(const Mat image);

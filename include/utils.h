@@ -36,4 +36,6 @@ template<typename T> extern cv::Mat downSample(const cv::Mat&);
 std::vector <std::vector <cv::Mat>> buildDogPyramid(
     std::vector <std::vector <cv::Mat>>&);
 
+template<typename T> T getMax(const cv::Mat);
+
 #endif

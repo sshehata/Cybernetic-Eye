@@ -34,8 +34,6 @@ extern void getExtrema(const std::vector< cv::Mat >&, const int, std::vector< cv
 template<typename T> extern void findSiftInterestPoint(cv::Mat&,
     std::vector<cv::KeyPoint>&);
 
-template<typename T> T getMax(const cv::Mat);
-
 std::vector< cv::KeyPoint> cleanPoints(const cv::Mat&, const std::vector< cv::KeyPoint>&);
 
 #endif
