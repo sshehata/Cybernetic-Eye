@@ -92,14 +92,12 @@ vector< double > computeOrientationHist(const Mat& image, const KeyPoint& keypoi
   int y = keypoint.pt.y - SIFT_KEYPOINT_WND_HEIGHT - 1;
   int width = SIFT_KEYPOINT_WND_WIDTH + 2;
   int height = SIFT_KEYPOINT_WND_HEIGHT + 2;
-  if (x < 0)
-    x = 0;
-  if (y < 0)
-    y = 0;
-  if (x + width > image.cols)
-    width = image.cols - x;
-  if (y + height > image.rows)
-    height = image.rows - y;
+  if (x < 0 ||
+      y < 0 ||
+      x + width > image.cols ||
+      y + height > image.rows)
+    return vector< double >();
+    
   Rect rect(x, y, width, height);
   Mat src_wnd = image(rect);
   Mat dx, dy, mag, angle;
