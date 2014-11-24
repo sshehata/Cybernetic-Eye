@@ -137,7 +137,7 @@ vector< KeyPoint > cleanPoints(const Mat& image,const vector< KeyPoint >& keypoi
     int col_index = (int)point.pt.x * factor;
     double principal_curvature = det.at<double>(row_index, col_index) -
           ALPHA * pow(trace.at<double>(row_index, col_index),2);
-    double pixel_value = image.at<double>(row_index, col_index);
+    double pixel_value = point.response;
     if(principal_curvature < PRINCIPAL_CURVATURE_THRESHOLD && pixel_value > RESPONSE_THRESHOLD) {
       valid_keypoints.push_back(keypoints.at(i));
     }

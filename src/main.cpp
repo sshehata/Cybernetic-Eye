@@ -80,7 +80,7 @@ int main (int argc, char**argv) {
       char name[2];
       std::sprintf(name, "%i", i*3 + 1);
       imshow(name, pyramid[i][j]);
-      cv::waitKey(0);
+      //cv::waitKey(0);
     }
   }
 
@@ -101,12 +101,12 @@ int main (int argc, char**argv) {
       char name[2];
       std::sprintf(name, "%i", i*3 + 1);
       imshow(name, dog_pyramid[i][j]);
-      cv::waitKey(0);
+      //cv::waitKey(0);
     }
   }
 
   vector< KeyPoint > keypoints;
-  getScaleSpaceExtrema<double>(dog_pyramid_squared, keypoints);
+  getScaleSpaceExtrema<double>(dog_pyramid, keypoints);
 
   vector< KeyPoint > valid_keypoints = cleanPoints(bigger_sharpened, keypoints);
 
@@ -115,9 +115,12 @@ int main (int argc, char**argv) {
   for (int i = 0; i < valid_keypoints.size(); ++i) {
     KeyPoint point = valid_keypoints.at(i);
     int octave = point.octave;
-    int factor = pow(2,octave-1);
+    double factor = pow(2,octave-1);
+    cout << factor << endl;
     int row_index = (int)point.pt.y * factor;
     int col_index = (int)point.pt.x * factor;
+    printf("At index [%d][%d] response is %lf\n", row_index, col_index,
+        keypoints[i].response);
     //image.at<uchar>(row_index,col_index) = 1;
     color_image.at<cv::Vec3b>(row_index,col_index) = {0, 0, 255};
   }
