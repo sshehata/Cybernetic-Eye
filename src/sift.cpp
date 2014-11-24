@@ -39,7 +39,7 @@ void getScaleSpaceExtrema(const vector< vector< Mat > >& pyr,
     for (int j = 1; j < scales; j++) {
       vector< Mat > sample_scales;
       sample_scales.push_back(pyr[i][j]);
-      sample_scales.push_back(pyr[i][j-1]);
+      //sample_scales.push_back(pyr[i][j-1]);
       sample_scales.push_back(pyr[i][j+1]);
       getExtrema<T>(sample_scales, i, keypoints);
     }
@@ -79,7 +79,7 @@ void getExtrema(const vector< Mat >& sample_scales, const int octave,
       T pixel = sample_scales[0].at<T>(i, j);
       Rect rect(j-1, i-1, 3, 3);
       if (isMinMax(pixel, rect, sample_scales)){
-        keypoints.push_back(KeyPoint(j, i, 0,-1.0f, pixel, octave, -1));
+        keypoints.push_back(KeyPoint(j, i, 0,-1.0f, pixel, octave));
       }
     }
   }
@@ -137,8 +137,8 @@ vector< KeyPoint > cleanPoints(const Mat& image,const vector< KeyPoint >& keypoi
     int col_index = (int)point.pt.x * factor;
     double principal_curvature = det.at<double>(row_index, col_index) -
           ALPHA * pow(trace.at<double>(row_index, col_index),2);
-    double pixel_value = point.response;
-    if(principal_curvature < PRINCIPAL_CURVATURE_THRESHOLD && pixel_value > RESPONSE_THRESHOLD) {
+    double pixel_value = fabs(point.response);
+    if(fabs(principal_curvature) < PRINCIPAL_CURVATURE_THRESHOLD && pixel_value > RESPONSE_THRESHOLD) {
       valid_keypoints.push_back(keypoints.at(i));
     }
   }

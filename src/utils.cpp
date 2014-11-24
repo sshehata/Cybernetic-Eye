@@ -99,8 +99,11 @@ void buildGaussianPyramid(const Mat& image, vector< vector <Mat>>& pyr,
       } else if (j == 0) {
         pyr[i].push_back(downSample<T>(pyr[i-1][1]));
       } else {
+        double new_sigma = (sigma * pow(SIFT_SIGMA_CHANGE, i));
+        int filter_size = new_sigma*6;
+        filter_size += 1 - filter_size %2;
         Ptr<cv::FilterEngine> e = cv::createGaussianFilter(image.type(),
-            Size(3, 3), (sigma * pow(SIFT_SIGMA_CHANGE, i)));
+            Size(filter_size, filter_size), new_sigma);
         pyr[i].push_back(pyr[i][j-1].clone()); // to set the correct size and type
         e->apply(pyr[i][j-1], pyr[i][j]);
       }

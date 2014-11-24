@@ -73,7 +73,8 @@ int main (int argc, char**argv) {
   g->apply(bigger, bigger_sharpened);
 
   vector<vector<Mat>> pyramid;
-  buildGaussianPyramid<double>(bigger_sharpened, pyramid, 3);
+  buildGaussianPyramid<double>(bigger_sharpened, pyramid,
+      SIFT_NUMBER_OF_OCTAVES);
 
   for(int i=0; i<3; i++) {
     for(int j=0; j<5; j++) {
@@ -107,8 +108,10 @@ int main (int argc, char**argv) {
 
   vector< KeyPoint > keypoints;
   getScaleSpaceExtrema<double>(dog_pyramid, keypoints);
+  cout << "Keypoints found: " << keypoints.size() << endl;
 
   vector< KeyPoint > valid_keypoints = cleanPoints(bigger_sharpened, keypoints);
+  cout << "Valid Keypoints found: " << valid_keypoints.size() << endl;
 
   Mat color_image;
   cvtColor(image, color_image, CV_GRAY2RGB);
@@ -116,11 +119,8 @@ int main (int argc, char**argv) {
     KeyPoint point = valid_keypoints.at(i);
     int octave = point.octave;
     double factor = pow(2,octave-1);
-    cout << factor << endl;
     int row_index = (int)point.pt.y * factor;
     int col_index = (int)point.pt.x * factor;
-    printf("At index [%d][%d] response is %lf\n", row_index, col_index,
-        keypoints[i].response);
     //image.at<uchar>(row_index,col_index) = 1;
     color_image.at<cv::Vec3b>(row_index,col_index) = {0, 0, 255};
   }
