@@ -10,14 +10,18 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
+<<<<<<< HEAD
  *         Author:  Samy Shihata (sshihata),
+=======
+ *         Author:  Samy Shihata (sshihata), Hossam Ahmed (hoss93)
+>>>>>>> 1601fcd026909f490bb2fffbc12ffcdcabea59e7
  *   Organization:  GUC
  *
  * =====================================================================================
  */
 
 #include "sift.h"
-
+#include "globals.h"
 using std::vector;
 using cv::Mat;
 using cv::KeyPoint;
@@ -26,6 +30,11 @@ using cv::Point;
 using cv::Sobel;
 using cv::magnitude;
 using cv::normalize;
+using cv::filter2D;
+using cv::KeyPoint;
+using cv::Point;
+using cv::BORDER_DEFAULT;
+using cv::Mat_;
 
 template<typename T>
 void getScaleSpaceExtrema(const vector< vector< Mat > >& pyr,
@@ -120,3 +129,39 @@ vector< double > computeOrientationHist(const Mat& image, const KeyPoint& keypoi
 }
 
 template vector< double > computeOrientationHist<double>(const Mat&, const KeyPoint&);
+
+vector< KeyPoint > cleanPoints(const Mat& image,const vector< KeyPoint >& keypoints) {
+  vector<KeyPoint> valid_keypoints;
+  // Second derivative kernels
+  Mat xx = (Mat_<double>(1,3) << 1, -2, 1);
+  Mat yy = (Mat_<double>(3,1) << 1, -2, 1);
+  Mat xy = (Mat_<double>(3,3) << 1, 0, -1, 0, 0, 0, -1, 0, 1);
+  xy /= 4;
+
+  // The matrices to contain the second derivatives
+  Mat Dxx;
+  Mat Dyy;
+  Mat Dxy;
+  filter2D( image, Dxx, -1 , xx, Point( -1, -1 ), 0, BORDER_DEFAULT );
+  filter2D( image, Dxy, -1 , xy, Point( -1, -1 ), 0, BORDER_DEFAULT );
+  filter2D( image, Dyy, -1 , yy, Point( -1, -1 ), 0, BORDER_DEFAULT );
+
+  //  The matrices used for operations to check whether a point is clean or not
+  Mat trace = Dxx + Dyy;
+  // This has to be element wise because it would have been Dxx * Dyy'
+  Mat det = Dxx.mul(Dyy) - Dxy.mul(Dxy);
+  for (int i = 0; i < keypoints.size(); ++i) {
+    KeyPoint point = keypoints.at(i);
+    int octave = point.octave;
+    int factor = pow(2,octave);
+    int row_index = (int)point.pt.y * factor;
+    int col_index = (int)point.pt.x * factor;
+    double principal_curvature = det.at<double>(row_index, col_index) -
+          ALPHA * pow(trace.at<double>(row_index, col_index),2);
+    double pixel_value = image.at<double>(row_index, col_index);
+    if(principal_curvature < PRINCIPAL_CURVATURE_THRESHOLD && pixel_value > RESPONSE_THRESHOLD) {
+      valid_keypoints.push_back(keypoints.at(i));
+    }
+  }
+  return valid_keypoints;
+}

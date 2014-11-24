@@ -10,7 +10,7 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  Samy Shihata (sshihata), 
+ *         Author:  Samy Shihata (sshihata), Hossam Ahmed (hoss93)
  *   Organization:  GUC
  *
  * =====================================================================================
@@ -24,7 +24,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <cmath>
 #include "globals.h"
-
+#include "utils.h"
 
 template<typename T>
 extern void getScaleSpaceExtrema(const std::vector< std::vector< cv::Mat > >&,
@@ -35,5 +35,7 @@ extern void getExtrema(const std::vector< cv::Mat >&, const int, std::vector< cv
 
 template<typename T>
 extern std::vector< double > computeOrientationHist(const cv::Mat&, const cv::KeyPoint&);
+
+std::vector< cv::KeyPoint> cleanPoints(const cv::Mat&, const std::vector< cv::KeyPoint>&);
 
 #endif
