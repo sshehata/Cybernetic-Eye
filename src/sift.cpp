@@ -91,11 +91,18 @@ template void getExtrema<double>(const vector< Mat >&, const int, vector< KeyPoi
 
 template<typename T>
 void findSiftInterestPoint(Mat& image, vector<KeyPoint>& keypoints) {
+  cv::Ptr<cv::FilterEngine> g = cv::createGaussianFilter(image.type(),
+      cv::Size(3, 3), sqrt(2));
+  Mat double_image = upSample<T>(image);
+  Mat double_image_sharpened(double_image.rows, double_image.cols,
+      double_image.type());
+  g->apply(double_image, double_image_sharpened);
   vector<vector<Mat>> pyramid;
-  buildGaussianPyramid<T>(image, pyramid, SIFT_NUMBER_OF_OCTAVES);
+  buildGaussianPyramid<T>(double_image_sharpened, pyramid,
+      SIFT_NUMBER_OF_OCTAVES);
   vector<vector<Mat>> dog_pyramid = buildDogPyramid(pyramid);
   getScaleSpaceExtrema<T>(dog_pyramid, keypoints);
-  keypoints = cleanPoints(image, keypoints);
+  keypoints = cleanPoints(double_image_sharpened, keypoints);
 }
 
 template void findSiftInterestPoint<int>(Mat&, vector<KeyPoint>&);

@@ -33,6 +33,8 @@ template<typename T> extern void buildGaussianPyramid(const cv::Mat&,
 
 template<typename T> extern cv::Mat downSample(const cv::Mat&);
 
+template<typename T> extern cv::Mat upSample(const cv::Mat&);
+
 std::vector <std::vector <cv::Mat>> buildDogPyramid(
     std::vector <std::vector <cv::Mat>>&);
 

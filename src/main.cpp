@@ -65,8 +65,15 @@ int main (int argc, char**argv) {
 
   cv::waitKey(0);
 
+  cv::Ptr<cv::FilterEngine> g = cv::createGaussianFilter(image_double.type(),
+      cv::Size(3, 3), sqrt(2));
+  Mat bigger = upSample<double>(image_double);
+  Mat bigger_sharpened(bigger.rows, bigger.cols,
+      bigger.type());
+  g->apply(bigger, bigger_sharpened);
+
   vector<vector<Mat>> pyramid;
-  buildGaussianPyramid<double>(image_double, pyramid, 3);
+  buildGaussianPyramid<double>(bigger_sharpened, pyramid, 3);
 
   for(int i=0; i<3; i++) {
     for(int j=0; j<5; j++) {
@@ -101,14 +108,14 @@ int main (int argc, char**argv) {
   vector< KeyPoint > keypoints;
   getScaleSpaceExtrema<double>(dog_pyramid_squared, keypoints);
 
-  vector< KeyPoint > valid_keypoints = cleanPoints(image_double, keypoints);
+  vector< KeyPoint > valid_keypoints = cleanPoints(bigger_sharpened, keypoints);
 
   Mat color_image;
   cvtColor(image, color_image, CV_GRAY2RGB);
   for (int i = 0; i < valid_keypoints.size(); ++i) {
     KeyPoint point = valid_keypoints.at(i);
     int octave = point.octave;
-    int factor = pow(2,octave);
+    int factor = pow(2,octave-1);
     int row_index = (int)point.pt.y * factor;
     int col_index = (int)point.pt.x * factor;
     //image.at<uchar>(row_index,col_index) = 1;

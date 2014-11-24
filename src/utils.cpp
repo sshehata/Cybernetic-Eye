@@ -68,6 +68,23 @@ template Mat downSample<int>(const cv::Mat&);
 template Mat downSample<uchar>(const cv::Mat&);
 template Mat downSample<double>(const cv::Mat&);
 
+template <typename T>
+Mat upSample(const Mat& image) {
+  int double_rows = image.rows * 2;
+  int double_cols = image.cols * 2;
+  Mat output(double_rows, double_cols, image.type());
+  for (int i=0; i<double_rows; i++) {
+    for(int j=0; j<double_cols; j++) {
+      output.at<T>(i, j) = image.at<T>(i/2, j/2);
+    }
+  }
+  return output;
+}
+
+template Mat upSample<int>(const cv::Mat&);
+template Mat upSample<uchar>(const cv::Mat&);
+template Mat upSample<double>(const cv::Mat&);
+
 // pyr[i][j] is the image at octave i and scale j
 template <typename T>
 void buildGaussianPyramid(const Mat& image, vector< vector <Mat>>& pyr,
@@ -78,7 +95,7 @@ void buildGaussianPyramid(const Mat& image, vector< vector <Mat>>& pyr,
     pyr.push_back(vector<Mat>());
     for(int j=0; j<n_scales; j++) {
       if(i == 0 && j == 0) {
-        pyr[0].push_back(image.clone());
+        pyr[0].push_back(image);
       } else if (j == 0) {
         pyr[i].push_back(downSample<T>(pyr[i-1][1]));
       } else {
