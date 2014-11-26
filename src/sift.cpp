@@ -39,7 +39,7 @@ void getScaleSpaceExtrema(const vector< vector< Mat > >& pyr,
     for (int j = 1; j < scales; j++) {
       vector< Mat > sample_scales;
       sample_scales.push_back(pyr[i][j]);
-      //sample_scales.push_back(pyr[i][j-1]);
+      sample_scales.push_back(pyr[i][j-1]);
       sample_scales.push_back(pyr[i][j+1]);
       getExtrema<T>(sample_scales, i, keypoints);
     }
@@ -68,6 +68,7 @@ inline bool isMinMax(const T pixel, const Rect& rect, const vector< Mat >& sampl
       }
     }
   }
+  cout << pixel << endl;
   return true;
 }
 
