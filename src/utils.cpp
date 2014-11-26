@@ -67,6 +67,8 @@ Mat downSample(const Mat& image) {
 template Mat downSample<int>(const cv::Mat&);
 template Mat downSample<uchar>(const cv::Mat&);
 template Mat downSample<double>(const cv::Mat&);
+template Mat downSample<float>(const cv::Mat&);
+template Mat downSample<short>(const cv::Mat&);
 
 template <typename T>
 Mat upSample(const Mat& image) {
@@ -84,49 +86,8 @@ Mat upSample(const Mat& image) {
 template Mat upSample<int>(const cv::Mat&);
 template Mat upSample<uchar>(const cv::Mat&);
 template Mat upSample<double>(const cv::Mat&);
-
-// pyr[i][j] is the image at octave i and scale j
-template <typename T>
-void buildGaussianPyramid(const Mat& image, vector< vector <Mat>>& pyr,
-    int n_octaves) {
-  int n_scales = SIFT_NUMBER_OF_SCALES;
-  double sigma = SIFT_INITIAL_SIGMA;
-  for(int i=0; i<n_octaves; i++) {
-    pyr.push_back(vector<Mat>());
-    for(int j=0; j<n_scales; j++) {
-      if(i == 0 && j == 0) {
-        pyr[0].push_back(image);
-      } else if (j == 0) {
-        pyr[i].push_back(downSample<T>(pyr[i-1][1]));
-      } else {
-        double new_sigma = (sigma * pow(SIFT_SIGMA_CHANGE, i));
-        int filter_size = new_sigma*6;
-        filter_size += 1 - filter_size %2;
-        Ptr<cv::FilterEngine> e = cv::createGaussianFilter(image.type(),
-            Size(filter_size, filter_size), new_sigma);
-        pyr[i].push_back(pyr[i][j-1].clone()); // to set the correct size and type
-        e->apply(pyr[i][j-1], pyr[i][j]);
-      }
-    }
-  }
-}
-
-template void buildGaussianPyramid<int>(const Mat&, vector< vector <Mat> >&, int);
-template void buildGaussianPyramid<uchar>(const Mat&, vector< vector <Mat> >&, int);
-template void buildGaussianPyramid<double>(const Mat&, vector< vector <Mat> >&, int);
-
-vector<vector<Mat>> buildDogPyramid(vector<vector<Mat>>& gauss_pyr) {
-  vector<vector<Mat>> pyramid;
-  int octaves = gauss_pyr.size();
-  int scales = gauss_pyr[0].size();
-  for(int i=0; i < octaves; i++) {
-    pyramid.push_back(vector<Mat>());
-    for(int j=0; j < scales - 1; j++) {
-      pyramid[i].push_back(gauss_pyr[i][j] - gauss_pyr[i][j+1]);
-    }
-  }
-  return pyramid;
-}
+template Mat upSample<float>(const cv::Mat&);
+template Mat upSample<short>(const cv::Mat&);
 
 template<typename T>
 T getMax(const Mat image) {

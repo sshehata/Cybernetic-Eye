@@ -29,6 +29,8 @@ using cv::BORDER_DEFAULT;
 using cv::Mat_;
 using std::cout;
 using std::endl;
+using cv::Size;
+using cv::Ptr;
 
 template<typename T>
 void getScaleSpaceExtrema(const vector< vector< Mat > >& pyr,
@@ -38,7 +40,7 @@ void getScaleSpaceExtrema(const vector< vector< Mat > >& pyr,
   for (int i = 0; i < octaves; i++)
     for (int j = 1; j < scales; j++) {
       vector< Mat > sample_scales;
-      sample_scales.push_back(pyr[i][j]);
+      //sample_scales.push_back(pyr[i][j]);
       sample_scales.push_back(pyr[i][j-1]);
       sample_scales.push_back(pyr[i][j+1]);
       getExtrema<T>(sample_scales, i, keypoints);
@@ -93,7 +95,7 @@ template<typename T>
 void findSiftInterestPoint(const Mat& input, vector<KeyPoint>& keypoints,
     int type, bool normalize, bool visualize) {
   Mat image(input.rows, input.cols, type);
-  if(image.type() != type) {
+  if(input.type() != type) {
     input.convertTo(image, image.type());
   } else {
     image = input;
@@ -143,17 +145,18 @@ void findSiftInterestPoint(const Mat& input, vector<KeyPoint>& keypoints,
   if (visualize)
     cout << "Valid Keypoints found: " << keypoints.size() << endl;
   if (visualize) {
+    Mat im2(image.rows, image.cols, CV_32FC1);
+    image.convertTo(im2, im2.type());
+    cv::normalize(im2, im2, 0, 1, cv::NORM_MINMAX);
     Mat color_image;
-    cvtColor(image, color_image, CV_GRAY2RGB);
+    cvtColor(im2, color_image, CV_GRAY2RGB);
     for (int i = 0; i < keypoints.size(); ++i) {
       KeyPoint point = keypoints[i];
       int octave = point.octave;
       double factor = pow(2,octave-1);
       int row_index = (int)point.pt.y * factor;
       int col_index = (int)point.pt.x * factor;
-      cout << point.response << endl;
-      //image.at<uchar>(row_index,col_index) = 1;
-      color_image.at<cv::Vec3b>(row_index,col_index) = {0, 0, 255};
+      color_image.at<cv::Vec3f>(row_index,col_index) = {0, 0, 1};
     }
     cv::namedWindow("keypoints", cv::WINDOW_AUTOSIZE);// Create a window for display.
     imshow("keypoints", color_image.clone());
@@ -163,9 +166,13 @@ void findSiftInterestPoint(const Mat& input, vector<KeyPoint>& keypoints,
 
 template void findSiftInterestPoint<int>(const Mat&, vector<KeyPoint>&, int,
     bool, bool);
+template void findSiftInterestPoint<float>(const Mat&, vector<KeyPoint>&, int,
+    bool, bool);
 template void findSiftInterestPoint<double>(const Mat&, vector<KeyPoint>&, int,
     bool, bool);
 template void findSiftInterestPoint<uchar>(const Mat&, vector<KeyPoint>&, int,
+    bool, bool);
+template void findSiftInterestPoint<short>(const Mat&, vector<KeyPoint>&, int,
     bool, bool);
 
 vector< KeyPoint > cleanPoints(const Mat& image,const vector< KeyPoint >& keypoints) {
@@ -180,9 +187,9 @@ vector< KeyPoint > cleanPoints(const Mat& image,const vector< KeyPoint >& keypoi
   Mat Dxx;
   Mat Dyy;
   Mat Dxy;
-  filter2D( image, Dxx, -1 , xx, Point( -1, -1 ), 0, BORDER_DEFAULT );
-  filter2D( image, Dxy, -1 , xy, Point( -1, -1 ), 0, BORDER_DEFAULT );
-  filter2D( image, Dyy, -1 , yy, Point( -1, -1 ), 0, BORDER_DEFAULT );
+  filter2D( image, Dxx, CV_64F , xx);
+  filter2D( image, Dxy, CV_64F , xy);
+  filter2D( image, Dyy, CV_64F , yy);
 
   //  The matrices used for operations to check whether a point is clean or not
   Mat trace = Dxx + Dyy;
@@ -194,12 +201,55 @@ vector< KeyPoint > cleanPoints(const Mat& image,const vector< KeyPoint >& keypoi
     int factor = pow(2,octave);
     int row_index = (int)point.pt.y * factor;
     int col_index = (int)point.pt.x * factor;
-    double principal_curvature = det.at<double>(row_index, col_index) -
-          ALPHA * pow(trace.at<double>(row_index, col_index),2);
+    double principal_curvature = det.at<float>(row_index, col_index) -
+          ALPHA * pow(trace.at<float>(row_index, col_index),2);
     double pixel_value = fabs(point.response);
     if(fabs(principal_curvature) < PRINCIPAL_CURVATURE_THRESHOLD && pixel_value > RESPONSE_THRESHOLD) {
       valid_keypoints.push_back(keypoints.at(i));
     }
   }
   return valid_keypoints;
+}
+
+// pyr[i][j] is the image at octave i and scale j
+template <typename T>
+void buildGaussianPyramid(const Mat& image, vector< vector <Mat>>& pyr,
+    int n_octaves) {
+  int n_scales = SIFT_NUMBER_OF_SCALES;
+  double sigma = SIFT_INITIAL_SIGMA;
+  for(int i=0; i<n_octaves; i++) {
+    pyr.push_back(vector<Mat>());
+    for(int j=0; j<n_scales; j++) {
+      if(i == 0 && j == 0) {
+        pyr[0].push_back(image);
+      } else if (j == 0) {
+        pyr[i].push_back(downSample<T>(pyr[i-1][1]));
+      } else {
+        double new_sigma = (sigma * pow(SIFT_SIGMA_CHANGE, i));
+        int filter_size = new_sigma*6;
+        filter_size += 1 - filter_size %2;
+        Ptr<cv::FilterEngine> e = cv::createGaussianFilter(image.type(),
+            Size(filter_size, filter_size), new_sigma);
+        pyr[i].push_back(pyr[i][j-1].clone()); // to set the correct size and type
+        e->apply(pyr[i][j-1], pyr[i][j]);
+      }
+    }
+  }
+}
+
+template void buildGaussianPyramid<int>(const Mat&, vector< vector <Mat> >&, int);
+template void buildGaussianPyramid<uchar>(const Mat&, vector< vector <Mat> >&, int);
+template void buildGaussianPyramid<double>(const Mat&, vector< vector <Mat> >&, int);
+
+vector<vector<Mat>> buildDogPyramid(vector<vector<Mat>>& gauss_pyr) {
+  vector<vector<Mat>> pyramid;
+  int octaves = gauss_pyr.size();
+  int scales = gauss_pyr[0].size();
+  for(int i=0; i < octaves; i++) {
+    pyramid.push_back(vector<Mat>());
+    for(int j=0; j < scales - 1; j++) {
+      pyramid[i].push_back(gauss_pyr[i][j] - gauss_pyr[i][j+1]);
+    }
+  }
+  return pyramid;
 }

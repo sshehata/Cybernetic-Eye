@@ -54,7 +54,7 @@ int main (int argc, char**argv) {
   imshow("Cybervis", image);
 
   vector< KeyPoint > keypoints;
-  findSiftInterestPoint<uchar>(image, keypoints);
+  findSiftInterestPoint<double>(image, keypoints, CV_64FC1, true);
 
   return 0;
 }

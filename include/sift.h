@@ -38,4 +38,10 @@ template<typename T> extern void findSiftInterestPoint(const cv::Mat&,
 
 std::vector< cv::KeyPoint> cleanPoints(const cv::Mat&, const std::vector< cv::KeyPoint>&);
 
+template<typename T> extern void buildGaussianPyramid(const cv::Mat&,
+    std::vector< std::vector <cv::Mat> >&, int);
+
+std::vector <std::vector <cv::Mat>> buildDogPyramid(
+    std::vector <std::vector <cv::Mat>>&);
+
 #endif
