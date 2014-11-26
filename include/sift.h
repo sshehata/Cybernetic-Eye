@@ -21,6 +21,8 @@
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/features2d/features2d.hpp>
+#include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/highgui/highgui.hpp>
 #include <cmath>
 #include "utils.h"
 
@@ -31,8 +33,8 @@ extern void getScaleSpaceExtrema(const std::vector< std::vector< cv::Mat > >&,
 template<typename T>
 extern void getExtrema(const std::vector< cv::Mat >&, const int, std::vector< cv::KeyPoint >&);
 
-template<typename T> extern void findSiftInterestPoint(cv::Mat&,
-    std::vector<cv::KeyPoint>&);
+template<typename T> extern void findSiftInterestPoint(const cv::Mat&,
+    std::vector<cv::KeyPoint>&, int=CV_8UC1, bool=false, bool=true);
 
 std::vector< cv::KeyPoint> cleanPoints(const cv::Mat&, const std::vector< cv::KeyPoint>&);
 

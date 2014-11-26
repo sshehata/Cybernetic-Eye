@@ -68,7 +68,6 @@ inline bool isMinMax(const T pixel, const Rect& rect, const vector< Mat >& sampl
       }
     }
   }
-  cout << pixel << endl;
   return true;
 }
 
@@ -91,24 +90,83 @@ template void getExtrema<uchar>(const vector< Mat >&, const int, vector< KeyPoin
 template void getExtrema<double>(const vector< Mat >&, const int, vector< KeyPoint >& );
 
 template<typename T>
-void findSiftInterestPoint(Mat& image, vector<KeyPoint>& keypoints) {
+void findSiftInterestPoint(const Mat& input, vector<KeyPoint>& keypoints,
+    int type, bool normalize, bool visualize) {
+  Mat image(input.rows, input.cols, type);
+  if(image.type() != type) {
+    input.convertTo(image, image.type());
+  } else {
+    image = input;
+  }
+  if (normalize) {
+    cv::normalize(image, image, 0, 1, cv::NORM_MINMAX);
+  }
+
   cv::Ptr<cv::FilterEngine> g = cv::createGaussianFilter(image.type(),
       cv::Size(3, 3), sqrt(2));
-  Mat double_image = upSample<T>(image);
-  Mat double_image_sharpened(double_image.rows, double_image.cols,
-      double_image.type());
-  g->apply(double_image, double_image_sharpened);
+  Mat bigger_image = upSample<T>(image);
+  Mat bigger_sharpened(bigger_image.rows, bigger_image.cols,
+      bigger_image.type());
+  g->apply(bigger_image, bigger_sharpened);
+
   vector<vector<Mat>> pyramid;
-  buildGaussianPyramid<T>(double_image_sharpened, pyramid,
+  buildGaussianPyramid<T>(bigger_sharpened, pyramid,
       SIFT_NUMBER_OF_OCTAVES);
+  if (visualize) {
+    for(int i=0; i<pyramid.size(); i++) {
+      for(int j=0; j<pyramid[0].size(); j++) {
+        char name[2];
+        std::sprintf(name, "%i", i*3 + 1);
+        imshow(name, pyramid[i][j]);
+        //cv::waitKey(0);
+      }
+    }
+  }
+
   vector<vector<Mat>> dog_pyramid = buildDogPyramid(pyramid);
+  if (visualize) {
+    for(int i=0; i < dog_pyramid.size(); i++) {
+      for(int j=0; j < dog_pyramid[0].size(); j++) {
+        char name[2];
+        std::sprintf(name, "%i", i*3 + 1);
+        imshow(name, dog_pyramid[i][j]);
+        //cv::waitKey(0);
+      }
+    }
+  }
+
   getScaleSpaceExtrema<T>(dog_pyramid, keypoints);
-  keypoints = cleanPoints(double_image_sharpened, keypoints);
+  if (visualize)
+    cout << "Keypoints found: " << keypoints.size() << endl;
+
+  keypoints = cleanPoints(bigger_sharpened, keypoints);
+  if (visualize)
+    cout << "Valid Keypoints found: " << keypoints.size() << endl;
+  if (visualize) {
+    Mat color_image;
+    cvtColor(image, color_image, CV_GRAY2RGB);
+    for (int i = 0; i < keypoints.size(); ++i) {
+      KeyPoint point = keypoints[i];
+      int octave = point.octave;
+      double factor = pow(2,octave-1);
+      int row_index = (int)point.pt.y * factor;
+      int col_index = (int)point.pt.x * factor;
+      cout << point.response << endl;
+      //image.at<uchar>(row_index,col_index) = 1;
+      color_image.at<cv::Vec3b>(row_index,col_index) = {0, 0, 255};
+    }
+    cv::namedWindow("keypoints", cv::WINDOW_AUTOSIZE);// Create a window for display.
+    imshow("keypoints", color_image.clone());
+    cv::waitKey(0);
+  }
 }
 
-template void findSiftInterestPoint<int>(Mat&, vector<KeyPoint>&);
-template void findSiftInterestPoint<uchar>(Mat&, vector<KeyPoint>&);
-template void findSiftInterestPoint<double>(Mat&, vector<KeyPoint>&);
+template void findSiftInterestPoint<int>(const Mat&, vector<KeyPoint>&, int,
+    bool, bool);
+template void findSiftInterestPoint<double>(const Mat&, vector<KeyPoint>&, int,
+    bool, bool);
+template void findSiftInterestPoint<uchar>(const Mat&, vector<KeyPoint>&, int,
+    bool, bool);
 
 vector< KeyPoint > cleanPoints(const Mat& image,const vector< KeyPoint >& keypoints) {
   vector<KeyPoint> valid_keypoints;
@@ -131,7 +189,7 @@ vector< KeyPoint > cleanPoints(const Mat& image,const vector< KeyPoint >& keypoi
   // This has to be element wise because it would have been Dxx * Dyy'
   Mat det = Dxx.mul(Dyy) - Dxy.mul(Dxy);
   for (int i = 0; i < keypoints.size(); ++i) {
-    KeyPoint point = keypoints.at(i);
+    KeyPoint point = keypoints[i];
     int octave = point.octave;
     int factor = pow(2,octave);
     int row_index = (int)point.pt.y * factor;
