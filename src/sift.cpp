@@ -104,12 +104,10 @@ void findSiftInterestPoint(const Mat& input, vector<KeyPoint>& keypoints,
     cv::normalize(image, image, 0, 1, cv::NORM_MINMAX);
   }
 
-  cv::Ptr<cv::FilterEngine> g = cv::createGaussianFilter(image.type(),
-      cv::Size(3, 3), sqrt(2));
   Mat bigger_image = upSample<T>(image);
   Mat bigger_sharpened(bigger_image.rows, bigger_image.cols,
       bigger_image.type());
-  g->apply(bigger_image, bigger_sharpened);
+  GaussianBlur(bigger_image, bigger_sharpened, Size(0,0), sqrt(2));
 
   vector<vector<Mat>> pyramid;
   buildGaussianPyramid<T>(bigger_sharpened, pyramid,
@@ -118,11 +116,9 @@ void findSiftInterestPoint(const Mat& input, vector<KeyPoint>& keypoints,
     for(int i=0; i<pyramid.size(); i++) {
       for(int j=0; j<pyramid[0].size(); j++) {
         char name[2];
-        //printf("Gaussian Pyramid[%d][%d]=\n  ", i, j);
-        //cout << pyramid[i][j] << endl;
         std::sprintf(name, "%i", i*3 + 1);
         imshow(name, pyramid[i][j]);
-        //cv::waitKey(0);
+        cv::waitKey(0);
       }
     }
   }
@@ -134,7 +130,7 @@ void findSiftInterestPoint(const Mat& input, vector<KeyPoint>& keypoints,
         char name[2];
         std::sprintf(name, "%i", i*3 + 1);
         imshow(name, dog_pyramid[i][j]);
-        //cv::waitKey(0);
+        cv::waitKey(0);
       }
     }
   }
@@ -146,6 +142,7 @@ void findSiftInterestPoint(const Mat& input, vector<KeyPoint>& keypoints,
   keypoints = cleanPoints(bigger_sharpened, keypoints);
   if (visualize)
     cout << "Valid Keypoints found: " << keypoints.size() << endl;
+
   if (visualize) {
     Mat im2(image.rows, image.cols, CV_32FC1);
     image.convertTo(im2, im2.type());

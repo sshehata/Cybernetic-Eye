@@ -54,8 +54,8 @@ int main (int argc, char**argv) {
   imshow("Cybervis", image);
 
   vector< KeyPoint > keypoints;
-  Mat test = (cv::Mat_<uchar>(4,4) << 0, 0, 0, 0, 128, 200, 200, 130, 140, 20, 255, 150, 0, 123, 0, 0);
-  //cout << test << endl;
+  // Calls main SIFT function on a image and tells it to convert the matrix to
+  // double and normalize to the range [0,1] before running SIFT
   findSiftInterestPoint<double>(image, keypoints, CV_64FC1, true);
 
   return 0;
