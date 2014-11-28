@@ -119,7 +119,7 @@ void findSiftInterestPoint(const Mat& input, vector<KeyPoint>& keypoints,
   Mat bigger_image = upSample<T>(image);
   Mat bigger_sharpened(bigger_image.rows, bigger_image.cols,
       bigger_image.type());
-  GaussianBlur(bigger_image, bigger_sharpened, Size(0,0), sqrt(2));
+  GaussianBlur(bigger_image, bigger_sharpened, Size(0,0), sqrt(2)/2);
 
   vector<vector<Mat>> pyramid;
   buildGaussianPyramid<T>(bigger_sharpened, pyramid,
