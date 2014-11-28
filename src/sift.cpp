@@ -10,7 +10,15 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
+<<<<<<< HEAD
  *         Author:  Samy Shihata (sshihata), Mohamed Ashraf (m0hamed), Hossam Ahmed (hoss93)
+=======
+<<<<<<< HEAD
+ *         Author:  Samy Shihata (sshihata),
+=======
+ *         Author:  Samy Shihata (sshihata), Hossam Ahmed (hoss93)
+>>>>>>> 1601fcd026909f490bb2fffbc12ffcdcabea59e7
+>>>>>>> origin/ft/orient_hist
  *   Organization:  GUC
  *
  * =====================================================================================
@@ -22,6 +30,10 @@ using std::vector;
 using cv::Mat;
 using cv::KeyPoint;
 using cv::Rect;
+using cv::Point;
+using cv::Sobel;
+using cv::magnitude;
+using cv::normalize;
 using cv::filter2D;
 using cv::KeyPoint;
 using cv::Point;
@@ -173,6 +185,41 @@ template void findSiftInterestPoint<uchar>(const Mat&, vector<KeyPoint>&, int,
     bool, bool);
 template void findSiftInterestPoint<short>(const Mat&, vector<KeyPoint>&, int,
     bool, bool);
+
+template <typename T>
+vector< double > computeOrientationHist(const Mat& image, const KeyPoint& keypoint) {
+  int x = keypoint.pt.x - SIFT_KEYPOINT_WND_WIDTH - 1;
+  int y = keypoint.pt.y - SIFT_KEYPOINT_WND_HEIGHT - 1;
+  int width = SIFT_KEYPOINT_WND_WIDTH + 2;
+  int height = SIFT_KEYPOINT_WND_HEIGHT + 2;
+  if (x < 0 ||
+      y < 0 ||
+      x + width > image.cols ||
+      y + height > image.rows)
+    return vector< double >();
+  Rect rect(x, y, width, height);
+  Mat src_wnd = image(rect);
+  Mat dx, dy, mag, angle;
+  Sobel(src_wnd, dx, src_wnd.depth(), 1, 0);
+  Sobel(src_wnd, dy, src_wnd.depth(), 0, 1);
+  magnitude(dx, dy, mag);
+  phase(dx, dy, angle, true);
+  vector<double> bins(128);
+  for (int i = 1; i < src_wnd.rows - 1; i++) {
+    for (int j = 1; j < src_wnd.cols - 1; j++) {
+      //calculate the start of bin range for the current 4x4 quad;
+      int base_bin = ((((i - 1) / 4) * 4) + ((j - 1) / 4)) * 8;
+      int bin = base_bin + (int)(angle.at<T>(i, j) / 45);
+      bins[bin] += mag.at<T>(i, j);
+    }
+  }
+  vector<double> bins_norm;
+  normalize(bins, bins_norm, 0, 1, cv::NORM_MINMAX);
+  return bins_norm;
+}
+
+template vector< double > computeOrientationHist<double>(const Mat&,
+    const KeyPoint&);
 
 vector< KeyPoint > cleanPoints(const Mat& image,const vector< KeyPoint >& keypoints) {
   vector<KeyPoint> valid_keypoints;

@@ -34,7 +34,6 @@ using std::vector;
 using cv::imread;
 
 int main (int argc, char**argv) {
-
   if(argc != 2)
   {
     cout << " Usage: cybervis ImageToLoadAndDisplay" << endl;

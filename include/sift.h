@@ -21,9 +21,10 @@
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/features2d/features2d.hpp>
-#include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <cmath>
+#include "globals.h"
 #include "utils.h"
 
 template<typename T>
@@ -43,5 +44,8 @@ template<typename T> extern void buildGaussianPyramid(const cv::Mat&,
 
 std::vector <std::vector <cv::Mat>> buildDogPyramid(
     std::vector <std::vector <cv::Mat>>&);
+
+template<typename T>
+extern std::vector< double > computeOrientationHist(const cv::Mat&, const cv::KeyPoint&);
 
 #endif
