@@ -40,7 +40,7 @@ void getScaleSpaceExtrema(const vector< vector< Mat > >& pyr,
   for (int i = 0; i < octaves; i++)
     for (int j = 1; j < scales; j++) {
       vector< Mat > sample_scales;
-      //sample_scales.push_back(pyr[i][j]);
+      sample_scales.push_back(pyr[i][j]);
       sample_scales.push_back(pyr[i][j-1]);
       sample_scales.push_back(pyr[i][j+1]);
       getExtrema<T>(sample_scales, i, keypoints);
@@ -118,6 +118,8 @@ void findSiftInterestPoint(const Mat& input, vector<KeyPoint>& keypoints,
     for(int i=0; i<pyramid.size(); i++) {
       for(int j=0; j<pyramid[0].size(); j++) {
         char name[2];
+        //printf("Gaussian Pyramid[%d][%d]=\n  ", i, j);
+        //cout << pyramid[i][j] << endl;
         std::sprintf(name, "%i", i*3 + 1);
         imshow(name, pyramid[i][j]);
         //cv::waitKey(0);
@@ -225,13 +227,9 @@ void buildGaussianPyramid(const Mat& image, vector< vector <Mat>>& pyr,
       } else if (j == 0) {
         pyr[i].push_back(downSample<T>(pyr[i-1][1]));
       } else {
-        double new_sigma = (sigma * pow(SIFT_SIGMA_CHANGE, i));
-        int filter_size = new_sigma*6;
-        filter_size += 1 - filter_size %2;
-        Ptr<cv::FilterEngine> e = cv::createGaussianFilter(image.type(),
-            Size(filter_size, filter_size), new_sigma);
+        double new_sigma = (sigma * pow(SIFT_SIGMA_CHANGE, j));
         pyr[i].push_back(pyr[i][j-1].clone()); // to set the correct size and type
-        e->apply(pyr[i][j-1], pyr[i][j]);
+        GaussianBlur(pyr[i][j-1], pyr[i][j], Size(0,0), new_sigma);
       }
     }
   }
